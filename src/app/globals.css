@@ -1,34 +1,34 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Core Palette */
+  --bg-primary: #05070a;
+  --bg-secondary: #0a0d14;
+  --text-primary: #f0f2f5;
+  --text-secondary: #94a3b8;
+  
+  /* Action Auras (HSL) */
+  --aura-care: 142, 70%, 45%;
+  --aura-feel: 350, 80%, 65%;
+  --aura-seek: 45, 90%, 55%;
+  --aura-connect: 190, 85%, 50%;
+  --aura-express: 280, 75%, 60%;
+  --aura-perceive: 240, 60%, 55%;
+  --aura-serve: 40, 80%, 50%;
+  --aura-observe: 210, 20%, 60%;
+  --aura-release: 0, 0%, 90%;
+  --aura-integrate: 300, 50%, 60%;
+  --aura-create: 20, 90%, 55%;
+  --aura-transcend: 260, 20%, 95%;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  /* Default current aura */
+  --aura-current: var(--aura-connect);
 
-html {
-  height: 100%;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(12px);
+  
+  /* Transitions */
+  --ease-organic: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 * {
@@ -37,13 +37,52 @@ body {
   margin: 0;
 }
 
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  scrollbar-gutter: stable;
+}
+
+body {
+  min-height: 100vh;
+}
+
 a {
   color: inherit;
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+.aura-glow {
+  filter: drop-shadow(0 0 15px hsla(var(--aura-current), 0.3));
+}
+
+.organic-transition {
+  transition: all 0.4s var(--ease-organic);
 }
