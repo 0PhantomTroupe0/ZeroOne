@@ -13,7 +13,7 @@ export interface UpdateInfo {
 }
 
 class UpdateService {
-  private currentVersion: string = "0.1.0"; // Versão fixa local ou vinda do package.json
+  private currentVersion: string = "0.1.1"; // Versão fixa local ou vinda do package.json
   private remoteUrl: string = "https://raw.githubusercontent.com/0PhantomTroupe0/ZeroOne/main/version.json";
   private checkInterval: number = 1000 * 60 * 30; // 30 minutos
   private autoUpdateEnabled: boolean = true;
