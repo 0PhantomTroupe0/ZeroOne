@@ -904,7 +904,7 @@
 
 .manifestation {
   width: 100%;
-  max-width: 1200px; /* Optional: limit width for better readability on very wide screens */
+  max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem;
   border-radius: 1.5rem;
@@ -913,14 +913,44 @@
   align-items: center;
   text-align: center;
   gap: 1rem;
-  background: linear-gradient(145deg, rgba(28, 28, 30, 0.1) 0%, rgba(10, 10, 12, 0.2) 100%);
-  border: 1.5px solid var(--vibe-color, rgba(255, 255, 255, 0.15));
+  background: linear-gradient(145deg, rgba(28, 28, 30, 0.15) 0%, rgba(10, 10, 12, 0.25) 100%);
+  position: relative;
   backdrop-filter: blur(25px);
+  transition: transform 0.4s var(--ease-organic), box-shadow 0.6s ease;
+  border: none; /* Border is handled by pseudo-element */
+}
+
+/* Quadrille border with invisible corners */
+.manifestation::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5rem;
+  padding: 1.5px;
+  border: 1.5px dashed var(--vibe-color, rgba(255, 255, 255, 0.3));
+  mask-image: 
+    linear-gradient(to right, transparent 40px, #000 40px, #000 calc(100% - 40px), transparent calc(100% - 40px)),
+    linear-gradient(to bottom, transparent 40px, #000 40px, #000 calc(100% - 40px), transparent calc(100% - 40px));
+  mask-composite: add;
+  -webkit-mask-composite: destination-over; /* For Safari/webkit cross-shaped mask logic */
+  pointer-events: none;
+  opacity: 0.8;
+  transition: border-color 0.6s ease;
+}
+
+/* Secondary glow layer */
+.manifestation::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5rem;
   box-shadow: 
     0 10px 40px rgba(0, 0, 0, 0.4),
     0 0 12px var(--vibe-glow, rgba(255, 255, 255, 0.1)),
     inset 0 0 10px var(--vibe-glow, rgba(255, 255, 255, 0.05));
-  transition: transform 0.4s var(--ease-organic), border-color 0.6s ease, box-shadow 0.6s ease;
+  pointer-events: none;
+  z-index: -1;
+  transition: box-shadow 0.6s ease;
 }
 
 .manifestHeader {
@@ -1283,21 +1313,7 @@
 .chatInputRow {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 0.4rem 1.5rem;
-  border-radius: 40px;
-  border: 1px solid;
-  position: relative;
-  /* Pontas invisíveis via Máscara */
-  mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
-  transition: all 0.5s var(--ease-organic);
-}
-
-.chatInputRow:focus-within {
-  background: rgba(255, 255, 255, 0.05);
-  transform: scale(1.01);
+  gap: 0.75rem;
 }
 
 .chatInputWrapper {
@@ -1315,12 +1331,14 @@
 
 .chatInput {
   width: 100%;
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   padding: 0.6rem 1rem 0.6rem 2.5rem;
   color: #fff;
   font-size: 0.9rem;
   outline: none;
+  transition: border-color 0.2s ease;
 }
 
 .chatInput:focus {
