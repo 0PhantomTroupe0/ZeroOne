@@ -1256,22 +1256,13 @@ function HomeContent() {
           return [data, ...prev];
         });
 
-        // Trigger Manifestation Splash
-        const mon = MON_MAPPING[chatAction.id];
-        if (mon) {
-          setActiveMon({ ...mon, phrase: mon.phrase });
-          setShowSplash(true);
-          setTimeout(() => setShowSplash(false), 3500); // Slightly more time to read
-        }
-
         // --- BOT LOGIC (DAILY JUDGE) ---
+        // We still let the bot post to the feed, but we remove the intrusive popups
         const today = new Date();
         const judge = DAILY_JUDGE_CONFIG[today.getDay()];
         
         if (judge) {
-          // Check if today's judge already spoke to the network today
           const startOfDay = new Date(today.setHours(0,0,0,0)).toISOString();
-          
           const { data: recentPost } = await supabase
             .from('consciousness_nodes')
             .select('id')
@@ -1282,22 +1273,7 @@ function HomeContent() {
           if (!recentPost || recentPost.length === 0) {
             const judgment = judge.phrases[chatAction.id] || "Sua vibração é dissonante perante meu nexo.";
             
-            // Trigger direct message on screen
-            setTimeout(() => {
-              setActiveBot({ 
-                id: judge.id, 
-                name: judge.name, 
-                avatar: judge.avatar, 
-                title: judge.title 
-              });
-              setLucemonMessage(judgment);
-              setTimeout(() => {
-                setLucemonMessage(null);
-                setActiveBot(null);
-              }, 4500);
-            }, 1000);
-
-            // Wait a tiny bit for dramatic effect and post to feed
+            // Post to feed without showing the popup message
             setTimeout(async () => {
               await supabase
                 .from('consciousness_nodes')
