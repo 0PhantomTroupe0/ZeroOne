@@ -1186,6 +1186,12 @@ function HomeContent() {
     const hasAttachments = attachedFiles.image || attachedFiles.audio;
     if ((!chatMessage.trim() && !hasAttachments) || isSending || !user) return;
 
+    // Limpar mensagens e splashes ativos ao iniciar novo envio
+    setActiveMon(null);
+    setShowSplash(false);
+    setLucemonMessage(null);
+    setActiveBot(null);
+
     setIsSending(true);
     try {
       const { data: { user: _user } } = await supabase.auth.getUser();
@@ -2879,6 +2885,7 @@ function HomeContent() {
             </svg>
           )}
         </AnimatePresence>
+        <WelcomeGuide />
     </div>
   );
 }

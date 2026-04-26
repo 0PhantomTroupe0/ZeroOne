@@ -33,7 +33,7 @@ export default function RootLayout({
       <body className="organic-transition">
         <div className="aura-bg" />
         <main>{children}</main>
-        <UpdateNotifier />
+        {typeof window !== 'undefined' && <UpdateNotifier />}
       </body>
     </html>
   );

@@ -9,8 +9,9 @@ import {
   Sun, Anchor, Eye, Wind, Atom, Palette, Sparkles 
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import UserPresence from "@/components/UserPresence";
-import ProfileSettings from "@/components/ProfileSettings";
+import dynamic from "next/dynamic";
+const UserPresence = dynamic(() => import("@/components/UserPresence"), { ssr: false });
+const ProfileSettings = dynamic(() => import("@/components/ProfileSettings"), { ssr: false });
 import styles from "./account.module.css";
 
 export default function AccountPage() {
@@ -19,9 +20,11 @@ export default function AccountPage() {
   const [manifestations, setManifestations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    setMounted(true);
     fetchData();
   }, []);
 
@@ -30,7 +33,9 @@ export default function AccountPage() {
       setLoading(true);
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (!currentUser) {
-        router.push('/auth');
+        if (typeof window !== 'undefined') {
+          router.push('/auth');
+        }
         return;
       }
       setUser(currentUser);
@@ -61,7 +66,7 @@ export default function AccountPage() {
     router.push('/auth');
   };
 
-  if (loading) return <div className={styles.loading}>Sincronizando consciência...</div>;
+  if (!mounted || loading) return <div className={styles.loading}>Sincronizando consciência...</div>;
 
   return (
     <main className={styles.container}>
