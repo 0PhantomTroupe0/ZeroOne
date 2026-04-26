@@ -1,0 +1,6 @@
+{
+  "version": "0.1.0",
+  "changelog": "Versão inicial do sistema de atualização automática implementada. Monitoramento via GitHub raw ativado.",
+  "forceUpdate": true,
+  "publishedAt": "2026-04-26T04:30:00Z"
+}

@@ -1,0 +1,21 @@
+.container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1; /* Under the header but maybe above the feed or part of the background */
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  pointer-events: none;
+  animation: twinkle var(--duration) infinite ease-in-out;
+  animation-delay: var(--delay);
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}

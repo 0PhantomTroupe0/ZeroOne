@@ -1,0 +1,15 @@
+.canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 860; /* Above floatingFluxo (850) but below header (1000) */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+  mix-blend-mode: screen;
+}
+
+.active {
+  opacity: 1;
+}

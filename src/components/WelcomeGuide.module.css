@@ -1,0 +1,140 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  width: 480px;
+  background: #0e0e10;
+  border: 1px solid rgba(0, 243, 255, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 243, 255, 0.05);
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0, 243, 255, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.decoration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.line {
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(to right, transparent, rgba(0, 243, 255, 0.3), transparent);
+}
+
+.mainIcon {
+  color: #00f3ff;
+  filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.5));
+}
+
+.content {
+  min-height: 200px;
+  margin-bottom: 2rem;
+}
+
+.stepContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stepIcon {
+  width: 60px;
+  height: 60px;
+  background: rgba(0, 243, 255, 0.05);
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00f3ff;
+  margin-bottom: 1.5rem;
+}
+
+.stepTitle {
+  font-family: var(--font-orbitron);
+  font-size: 1.25rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  letter-spacing: 0.1em;
+}
+
+.stepDescription {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.activeDot {
+  width: 20px;
+  border-radius: 3px;
+  background: #00f3ff;
+  box-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+}
+
+.nextBtn {
+  background: rgba(0, 243, 255, 0.1);
+  border: 1px solid rgba(0, 243, 255, 0.3);
+  color: #00f3ff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nextBtn:hover {
+  background: #00f3ff;
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+}

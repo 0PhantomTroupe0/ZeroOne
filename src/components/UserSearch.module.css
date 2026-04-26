@@ -1,0 +1,133 @@
+.searchWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  background: rgba(10, 10, 10, 0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0 1rem;
+  height: 44px;
+  transition: all 0.3s ease;
+}
+
+.searchContainer:focus-within {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--design-neon, #fff);
+  box-shadow: 0 0 15px var(--design-neon, rgba(255, 255, 255, 0.1));
+}
+
+.searchIcon {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.searchInput {
+  background: none;
+  border: none;
+  color: var(--design-neon, #fff);
+  padding: 0 0.8rem;
+  flex: 1;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.clearBtn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.clearBtn:hover {
+  color: #fff;
+}
+
+.dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  right: 0;
+  background: rgba(15, 15, 25, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 1000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.resultItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.resultItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.avatarMini {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.avatarMini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.fullName {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+}
+
+.status {
+  padding: 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+}
+
+.sectionTitle {
+  padding: 0.6rem 1rem 0.3rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 0.2rem;
+}

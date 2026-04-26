@@ -1,0 +1,1557 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5vw;
+  background: radial-gradient(circle at center, #020205 0%, #000000 100%);
+  overflow: hidden;
+  position: relative;
+  color: #fff;
+  font-family: inherit;
+}
+
+.backgroundNoise {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.05;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  z-index: 0;
+}
+
+.overlayScanner {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 170, 0.03) 51%, transparent 51%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* --- SIDE PANELS --- */
+.sidePanel {
+  flex: 1;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  text-align: center;
+  margin-top: 25vh; /* Descido 25% conforme solicitado */
+  animation: uiRainbowSync 84s infinite;
+}
+
+.sidePanelRight {
+  animation: uiRainbowSync 84s infinite;
+  animation-delay: -80.05s; 
+}
+
+.sidePanelLeft {
+  animation: uiRainbowSync 84s infinite;
+  animation-delay: -83.11s;
+}
+
+.cyberDecal {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  color: var(--design-neon, #00ffaa);
+  opacity: 1;
+  padding: 0.2rem 1rem;
+  text-shadow: 0 0 10px var(--design-neon, #00ffaa);
+  animation: decalGlitch 3s infinite linear;
+}
+
+@keyframes decalGlitch {
+  0%, 100% { opacity: 1; text-shadow: 0 0 10px var(--design-neon, #00ffaa); }
+  92% { opacity: 1; }
+  94% { opacity: 0.4; }
+  96% { opacity: 1; text-shadow: 0 0 30px var(--design-neon, #00ffaa); }
+  98% { opacity: 0.8; }
+}
+
+.sidePanelRight .cyberDecal {
+  border: none;
+  padding: 0.2rem 1rem;
+}
+
+.sideIcon {
+  color: var(--design-neon, #00ffaa);
+  opacity: 0.8;
+  margin-top: 1vh;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 10px var(--design-neon, #00ffaa));
+  animation: floatIcon 4s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 10px var(--design-neon, #00ffaa)); }
+  50% { transform: translateY(-8px); filter: drop-shadow(0 0 25px var(--design-neon, #00ffaa)); }
+}
+.sideTitle {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  color: var(--design-neon, #00ffaa);
+  text-shadow: 0 0 10px var(--design-neon, #00ffaa), 0 0 20px rgba(0,255,170,0.6);
+  line-height: 1.2;
+  animation: titlePulse 3s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+  0%, 100% { filter: brightness(1) saturate(1.2); text-shadow: 0 0 10px var(--design-neon, #ffffff), 0 0 15px rgba(255,255,255,0.5); }
+  50% { filter: brightness(1.3) saturate(1.6); text-shadow: 0 0 20px var(--design-neon, #ffffff), 0 0 30px rgba(255,255,255,0.8); }
+}
+
+.energyBolt {
+  font-size: 3.5vh;
+  color: #fff;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+}
+
+.sideText {
+  font-size: 0.95rem;
+  color: var(--design-neon, #ffffff);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  filter: brightness(0.9) saturate(1.3);
+}
+
+.panelFooter {
+  font-size: 0.85rem;
+  color: var(--design-neon, #ffffff);
+  font-weight: 800;
+  text-shadow: 0 0 10px var(--design-neon, #ffffff);
+  letter-spacing: 0.05em;
+  filter: brightness(1.2) saturate(1.5);
+}
+
+.neonBar {
+  width: 50px;
+  height: 6px;
+  background: var(--design-neon, #ffffff);
+  box-shadow: 0 0 20px var(--design-neon, #ffffff);
+  margin-bottom: 2rem;
+  border-radius: 4px;
+  animation: stretchBar 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes stretchBar {
+  0%, 100% { width: 40px; opacity: 0.6; }
+  50% { width: 120px; opacity: 1; box-shadow: 0 0 25px var(--design-neon, #ffffff); }
+}
+
+.binaryCode {
+  font-family: monospace;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.2em;
+  animation: binaryGlow 2s infinite alternate;
+}
+
+@keyframes binaryGlow {
+  0% { text-shadow: 0 0 0px transparent; opacity: 0.4; }
+  100% { text-shadow: 0 0 8px rgba(255,255,255,0.5); opacity: 0.8; }
+}
+
+/* --- AUTH CARD (Now a Cyber Radar Interface) --- */
+.radarAtmosphere {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+}
+
+.windWisp {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.03) 0%, transparent 40%),
+              radial-gradient(ellipse at 70% 70%, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
+  filter: blur(40px);
+  animation: windDrift 20s linear infinite;
+}
+
+@keyframes windDrift {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.radarVortex {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.3;
+}
+
+.vortexPath {
+  stroke-dasharray: 800;
+  stroke-dashoffset: 800;
+  animation: vortexFlow 12s linear infinite;
+  filter: drop-shadow(0 0 5px #fff);
+}
+
+@keyframes vortexFlow {
+  0% { stroke-dashoffset: 800; opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+.authCard {
+  width: 360px;
+  height: 360px;
+  max-width: 95vw;
+  border-radius: 50%;
+  z-index: 10;
+  position: relative;
+  margin-top: -20vh;
+  margin-left: 0.5vw;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.8),
+              0 0 40px rgba(255, 255, 255, 0.1),
+              inset 0 0 40px rgba(255, 255, 255, 0.05);
+  border: 12px solid rgba(255,255,255,0.04);
+  animation: uiRainbowSync 84s infinite;
+  animation-delay: -81.58s;
+  transition: all 0.5s ease;
+}
+
+.radarTransitionActive {
+  animation: transitionGlitch 0.6s ease-out forwards;
+}
+
+@keyframes transitionGlitch {
+  0% { filter: brightness(3) contrast(2) hue-rotate(90deg); transform: scale(1.05) translate(2px, -2px); }
+  20% { filter: brightness(5) contrast(3) hue-rotate(-90deg); transform: scale(0.98) translate(-4px, 4px); }
+  45% { filter: brightness(2) contrast(1.5) hue-rotate(180deg); transform: scale(1.02) translate(3px, -3px) skewX(5deg); }
+  70% { filter: brightness(4) contrast(2) hue-rotate(0deg); transform: scale(0.99) stroke-dashoffset(10); }
+  100% { filter: brightness(1) contrast(1) hue-rotate(0deg); transform: scale(1) translate(0, 0); }
+}
+
+.glitchQuote {
+  position: absolute;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: 90vw;
+  text-align: center;
+  font-family: 'CF Glitch City', sans-serif;
+  font-size: 1.4rem; /* Mantido o tamanho duplicado */
+  font-weight: 400; /* Fontes glitch geralmente funcionam melhor com peso normal */
+  color: #ffffff;
+  opacity: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.2em; /* Reduzido levemente para a nova fonte */
+  line-height: 1.4;
+  pointer-events: none;
+  z-index: 20;
+  text-shadow: 0 0 15px #000000, 0 0 5px #000000;
+}
+
+
+@keyframes uiRainbowSync {
+  /* 7 Colors - 12s intervals (14.28% of 84s) */
+  0%, 13.5%      { filter: hue-rotate(200deg); }   /* 1. Pure Red */
+  14.28%, 27.7%  { filter: hue-rotate(230deg); }   /* 2. Orange */
+  28.57%, 42.0%  { filter: hue-rotate(260deg); }   /* 3. Yellow */
+  42.85%, 56.3%  { filter: hue-rotate(320deg); }   /* 4. Green */
+  57.14%, 70.6%  { filter: hue-rotate(30deg); }    /* 5. Baby Blue */
+  71.42%, 84.9%  { filter: hue-rotate(80deg); }    /* 6. Dark Blue */
+  85.71%, 99.2%  { filter: hue-rotate(130deg); }   /* 7. Purple */
+  100%           { filter: hue-rotate(200deg); }
+}
+
+.authContentWrapper {
+  position: relative;
+  z-index: 2;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* --- 12-PIECE FRACTURED WINDOW MATRIX --- */
+.authFragmentFrame {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2)) drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+}
+
+.authPiece {
+  position: absolute;
+  top: -2px; left: -2px; bottom: -2px; right: -2px;
+  background: rgba(10, 10, 15, 0.65);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  animation: floatAuthFragment 6s infinite alternate ease-in-out;
+  transform-origin: center;
+}
+
+@keyframes floatAuthFragment {
+  0% { transform: translate(0, 0) scale(1.002); }
+  100% { transform: translate(var(--cx, 0), var(--cy, 0)) scale(0.998); }
+}
+
+.ap1 { clip-path: polygon(0 0, 30% 0, 25% 25%, 0 20%); --cx: -1px; --cy: -2px; }
+.ap2 { clip-path: polygon(30% 0, 70% 0, 75% 30%, 25% 25%); --cx: 0px; --cy: -2px; }
+.ap3 { clip-path: polygon(70% 0, 100% 0, 100% 33%, 75% 30%); --cx: 2px; --cy: -1px; }
+.ap4 { clip-path: polygon(100% 33%, 100% 75%, 65% 70%, 75% 30%); --cx: 2px; --cy: 1px; }
+.ap5 { clip-path: polygon(100% 75%, 100% 100%, 60% 100%, 65% 70%); --cx: 1px; --cy: 2px; }
+.ap6 { clip-path: polygon(60% 100%, 30% 100%, 20% 65%, 65% 70%); --cx: 0px; --cy: 2px; }
+.ap7 { clip-path: polygon(30% 100%, 0 100%, 0 60%, 20% 65%); --cx: -2px; --cy: 1px; }
+.ap8 { clip-path: polygon(0 60%, 0 20%, 25% 25%, 20% 65%); --cx: -2px; --cy: 0px; }
+.ap9 { clip-path: polygon(25% 25%, 75% 30%, 45% 45%); --cx: 1px; --cy: -1px; filter: brightness(1.2); }
+.ap10 { clip-path: polygon(75% 30%, 65% 70%, 45% 45%); --cx: 1px; --cy: 1px; filter: brightness(1.1); }
+.ap11 { clip-path: polygon(65% 70%, 20% 65%, 45% 45%); --cx: -1px; --cy: 1px; filter: brightness(0.9); }
+.ap12 { clip-path: polygon(20% 65%, 25% 25%, 45% 45%); --cx: -1px; --cy: -1px; filter: brightness(1.3); }
+
+/* --- Módulo Tático: Radar Quadriculado Metálico --- */
+.hexBackground {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(15, 15, 18, 0.9);
+  background-image: 
+    linear-gradient(to right, transparent 49.9%, rgba(255, 255, 255, 0.1) 50%, transparent 50.1%),
+    linear-gradient(to bottom, transparent 49.9%, rgba(255, 255, 255, 0.1) 50%, transparent 50.1%),
+    repeating-radial-gradient(circle at center, 
+      transparent 0, 
+      transparent 58px, 
+      rgba(255, 255, 255, 0.05) 59px, 
+      transparent 60px
+    ),
+    repeating-radial-gradient(circle at center, 
+      transparent 0, 
+      transparent 118px, 
+      rgba(255, 255, 255, 0.03) 119px, 
+      transparent 120px
+    ),
+    radial-gradient(circle at center, rgba(30, 40, 50, 0.2) 0%, transparent 70%);
+  background-size: 100% 100%;
+  background-position: center center;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 1);
+  transition: all 0.5s ease;
+}
+
+.radarSignal {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--radar-accent, #fff);
+  border-radius: 50%;
+  opacity: 0;
+  filter: blur(1px);
+  box-shadow: 0 0 25px var(--radar-accent, #fff);
+  animation: signalScanFlash 6s infinite; 
+  z-index: 5;
+}
+
+@keyframes signalScanFlash {
+  0% { opacity: 0; transform: scale(0.5); }
+  1% { opacity: 1; transform: scale(2); filter: blur(0px); } /* Flash sharp */
+  5% { opacity: 0.2; transform: scale(1); }
+  10%, 100% { opacity: 0; transform: scale(0.5); }
+}
+
+/* Delays calculados para um ciclo de 6s começando às 12:00 (Top) rodando horário */
+.sig2 { top: 12%; left: 50%; animation-delay: 0s; }
+.sig3 { top: 20%; left: 80%; animation-delay: 0.75s; }
+.sig4 { top: 50%; left: 88%; animation-delay: 1.5s; }
+.sig5 { bottom: 20%; right: 20%; animation-delay: 2.25s; }
+.sig6 { bottom: 12%; left: 50%; animation-delay: 3s; }
+.sig7 { bottom: 20%; left: 20%; animation-delay: 3.75s; }
+.sig8 { top: 50%; left: 12%; animation-delay: 4.5s; }
+.sig1 { top: 20%; left: 20%; animation-delay: 5.25s; }
+
+.hexBackground::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg at 50% 50%, 
+    transparent 0%, 
+    transparent 75%, 
+    rgba(255, 255, 255, 0.1) 90%, 
+    rgba(255, 255, 255, 0.6) 99%, 
+    rgba(255, 255, 255, 0.9) 100%);
+  animation: radarSweep 6s linear infinite; /* Velocidade reduzida conforme solicitado */
+  mix-blend-mode: screen;
+}
+
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.hexFlickerActive {
+  opacity: 0.8;
+  filter: brightness(1.5) contrast(1.2);
+}
+
+/* --- Radar Action Button (Thick Industrial Design) --- */
+.radarColorBtn {
+  position: absolute;
+  top: -20px; /* Alinhado ao topo */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: 50px;
+  height: 16px; /* Retangular tático */
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(255, 255, 255, 0.15); /* Borda linear */
+  border-bottom: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 2px 2px 0 0; /* Cantos retos industriais */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 2px;
+  transition: all 0.2s ease;
+  pointer-events: auto;
+}
+
+.radarColorBtn::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  width: 2px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.radarColorBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--radar-accent, #ffffff);
+  box-shadow: 
+    0 0 30px var(--radar-accent, rgba(255, 255, 255, 0.4)),
+    inset 0 0 10px rgba(255, 255, 255, 0.2);
+  filter: drop-shadow(0 0 15px #fff);
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.radarColorBtn:hover::after,
+.radarColorBtn:hover::before {
+  content: '';
+  position: absolute;
+  top: -10px; left: -10px; right: -10px; bottom: 0px;
+  border: 1.5px solid #fff;
+  filter: blur(2px);
+  opacity: 0;
+  animation: staticHum 2s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.radarColorBtn:hover::before {
+  animation-delay: 1s;
+  top: -8px; left: -15px; right: -15px;
+}
+
+@keyframes staticHum {
+  0%, 100% { opacity: 0; transform: rotate(0deg); filter: blur(4px); }
+  50% { opacity: 0.5; transform: rotate(2deg); filter: blur(2px); border-color: var(--radar-accent, #fff); }
+}
+
+.radarColorBtn:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+.radarBtnGlow {
+  width: 10px;
+  height: 4px;
+  border-radius: 2px 2px 0 0;
+  background: var(--radar-accent, #fff);
+  opacity: 0.8;
+  box-shadow: 0 0 10px var(--radar-accent, #fff);
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- ÁGUAS ESPIRITUAIS (ORBITAIS) --- */
+.waterOrbitContainer {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 100px; height: 100px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  z-index: -1;
+}
+
+.radarColorBtn:hover .waterOrbitContainer {
+  opacity: 1;
+}
+
+.waterWisp {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 8px; height: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  filter: blur(4px);
+  box-shadow: 0 0 15px var(--radar-accent, #00ffaa);
+  mix-blend-mode: screen;
+}
+
+.wisp1 { animation: orbitWater 4s infinite linear; }
+.wisp2 { animation: orbitWater 4s infinite linear -1.33s; }
+.wisp3 { animation: orbitWater 4s infinite linear -2.66s; }
+
+@keyframes orbitWater {
+  0% { transform: rotate(0deg) translateX(40px) rotate(0deg) scale(1); opacity: 0.2; }
+  50% { transform: rotate(180deg) translateX(45px) rotate(-180deg) scale(1.5); opacity: 0.8; }
+  100% { transform: rotate(360deg) translateX(40px) rotate(-360deg) scale(1); opacity: 0.2; }
+}
+
+.logoBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  pointer-events: auto;
+  width: auto;
+  margin: 0;
+  text-align: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  
+  /* Sincronizado com o ciclo de 8s (7s hibernação / 1s glitch) */
+  animation: logoManifestationGlitch 8s infinite;
+}
+
+@keyframes logoManifestationGlitch {
+  0%, 85% { 
+    filter: brightness(1) contrast(1) hue-rotate(0deg); 
+    transform: translate(-50%, -50%) scale(1); 
+    opacity: 1;
+  }
+  90% {
+    filter: brightness(4) contrast(1.5) hue-rotate(180deg);
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 0.9;
+  }
+  93% {
+    filter: brightness(8) contrast(2) blur(2px) hue-rotate(-90deg);
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  96% {
+    filter: brightness(3) contrast(1.2) hue-rotate(0deg);
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% { 
+    filter: brightness(1) contrast(1) hue-rotate(0deg); 
+    transform: translate(-50%, -50%) scale(1); 
+  }
+}
+
+.logoBtn:hover {
+  /* Levita levemente para cima e para frente (escala) */
+  transform: translate(-50%, -55%) scale(1.15);
+  filter: 
+    drop-shadow(0 0 35px rgba(0, 255, 170, 0.7)) 
+    drop-shadow(0 0 15px #fff);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.logoBtn:hover::after,
+.logoBtn:hover::before {
+  content: '';
+  position: absolute;
+  top: -35px; left: -35px; right: -35px; bottom: -35px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  filter: blur(4px);
+  opacity: 0;
+  animation: plasmaHum 3s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.logoBtn:hover::before {
+  animation-delay: 1.5s;
+  top: -60px; left: -60px; right: -60px; bottom: -60px;
+}
+
+@keyframes plasmaHum {
+  0%, 100% { opacity: 0; transform: scale(0.9) rotate(0deg); filter: blur(6px); }
+  50% { opacity: 0.5; transform: scale(1.2) rotate(15deg); filter: blur(3px); border-color: var(--radar-accent, #00ffaa); }
+}
+
+@keyframes electricZap {
+  0%, 100% { opacity: 0; transform: scale(1) rotate(0deg); }
+  2% { opacity: 1; transform: scale(1.1) rotate(5deg) skewX(20deg); clip-path: polygon(0 10%, 100% 0, 90% 90%, 10% 100%); border-color: #fff; box-shadow: 0 0 20px #fff; }
+  4% { opacity: 0; }
+  6% { opacity: 1; transform: scale(0.9) rotate(-10deg) skewY(15deg); clip-path: polygon(20% 0, 80% 10%, 100% 70%, 0 80%); border-color: #00ffaa; }
+  8% { opacity: 0; }
+  10% { opacity: 1; transform: scale(1.2) rotate(15deg); clip-path: polygon(10% 20%, 90% 0, 80% 100%, 0 90%); border-color: #fff; }
+  12% { opacity: 0; }
+  14% { opacity: 1; transform: scale(1.05) skewX(-25deg); clip-path: polygon(0 0, 100% 20%, 70% 100%, 30% 90%); }
+  16% { opacity: 0; }
+  18% { opacity: 1; transform: scale(1.15) rotate(-5deg); border-color: #00ffaa; filter: brightness(2); }
+  20% { opacity: 0; }
+  22% { opacity: 1; transform: scale(0.95) skewY(-10deg); clip-path: polygon(15% 5%, 85% 0, 95% 95%, 5% 85%); }
+  24% { opacity: 0; }
+  26% { opacity: 1; transform: scale(1.25) rotate(20deg); border-color: #fff; box-shadow: 0 0 30px #fff; }
+  28% { opacity: 0; }
+  30% { opacity: 1; transform: scale(1.0) skewX(30deg); filter: blur(1px); }
+  32% { opacity: 0; }
+  50% { opacity: 1; transform: scale(1.1) rotate(-15deg); clip-path: polygon(0 30%, 100% 10%, 90% 90%, 20% 100%); }
+  52% { opacity: 0; }
+  70% { opacity: 1; transform: scale(1.2) rotate(10deg); border-color: #00ffaa; }
+  72% { opacity: 0; }
+  90% { opacity: 1; transform: scale(1.05) skewX(10deg); border-color: #fff; }
+  92% { opacity: 0; }
+}
+
+.logoBtn:active {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+.logoLoading {
+  animation: nexusActivation 2.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes nexusActivation {
+  0% { 
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    filter: drop-shadow(0 0 20px rgba(0, 255, 170, 0.4)) brightness(1);
+  }
+  100% { 
+    transform: translate(-50%, -50%) rotate(360deg) scale(0.6);
+    filter: drop-shadow(0 0 50px rgba(0, 255, 170, 0.8)) brightness(1.5);
+    opacity: 0.8;
+  }
+}
+
+.logoArea {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logoBorder {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, transparent 20%, var(--radar-accent, var(--design-neon, #ffffff)) 80%);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+  transition: background 0.5s ease;
+}
+
+.logoInner {
+  width: 100%;
+  height: 100%;
+  background: #050508;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.appLogo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.4));
+}
+
+/* --- SVG CIRCULAR TEXT (Radar HUD) --- */
+.radarTextSvg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  animation: svgRadarSpin 20s linear infinite;
+}
+
+@keyframes svgRadarSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.radarTextContent {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.35em;
+  fill: var(--radar-accent, var(--design-neon, #ffffff));
+  text-transform: uppercase;
+  opacity: 0.6;
+  transition: all 0.5s ease;
+}
+
+.errorRadarText {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  opacity: 1;
+}
+
+.radarCircle::before, .radarCircle::after {
+  content: "PROTOCOLO DE ACESSO /// IDENTIFIQUE SUA FREQUÊNCIA /// PROTOCOLO DE ACESSO /// IDENTIFIQUE SUA FREQUÊNCIA ///";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+  font-size: 1.8vh;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5vh;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+/* --- FORM --- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 200px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-left: 5px;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 15px;
+  color: rgba(255, 255, 255, 0.3);
+  transition: color 0.3s ease;
+}
+
+.externalIconTop, .externalIconBottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.4);
+  background: transparent;
+  width: 100%;
+}
+
+.externalIconBottom {
+  margin-top: -2px;
+}
+
+.externalIconTop {
+  margin-bottom: -2px;
+}
+
+.input {
+  width: 100%;
+  padding: 6px;
+  text-align: center;
+  letter-spacing: 0.2em;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.input:focus {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.4);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+.input:focus + .inputBorder {
+  width: 100%;
+  opacity: 1;
+}
+
+.inputWrapper:focus-within .inputIcon {
+  color: var(--design-neon, #ffffff);
+}
+
+.inputBorder {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: var(--design-neon, #ffffff);
+  transition: width 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease;
+  opacity: 0;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 0 10px var(--design-neon, #ffffff);
+}
+
+.submitBtn {
+  position: relative;
+  width: 100%;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.btnGlow {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(circle at center, var(--design-neon, #ffffff) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.submitBtn span, .btnIcon {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+.submitBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--design-neon, #ffffff);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.submitBtn:hover .btnGlow {
+  opacity: 0.15;
+}
+
+.submitBtn:hover span {
+  transform: translateX(-5px);
+}
+.submitBtn:hover .btnIcon {
+  transform: translateX(5px) rotate(15deg);
+  color: var(--design-neon, #ffffff);
+}
+
+.submitBtn:active {
+  transform: translateY(0);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.toggleArea {
+  position: absolute;
+  bottom: -20px; /* Alinhado à ponta de baixo do radar */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 30;
+  width: auto;
+  display: flex;
+  flex-direction: column-reverse; /* Menu acima do botão */
+  align-items: center;
+  gap: 15px;
+}
+
+.dotsBtn {
+  width: 50px;
+  height: 16px; /* Retangular tático identico ao superior */
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(255, 255, 255, 0.15); 
+  border-top: none; /* Borda aberta para o radar */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 0 0 2px 2px; /* Cantos retos industriais em baixo */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.2s ease;
+  pointer-events: auto;
+  outline: none;
+}
+
+.dotsBtn::before {
+  content: '';
+  position: absolute;
+  bottom: 100%; /* Linha tática subindo para o radar */
+  width: 2px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dotsBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--radar-accent, #ffffff);
+  color: #ffffff;
+  box-shadow: 
+    0 0 30px var(--radar-accent, rgba(255, 255, 255, 0.4)),
+    inset 0 0 10px rgba(255, 255, 255, 0.2);
+  filter: drop-shadow(0 0 15px #fff);
+}
+
+.dotsBtn svg {
+  width: 18px;
+  height: 18px;
+  margin-top: -4px; /* Ajuste para centralizar o ícone no tab estreito */
+}
+
+.toggleText {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  color: var(--radar-accent, #00ffaa);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 6px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 10px var(--radar-accent, rgba(0, 255, 170, 0.5));
+}
+
+.toggleBtn:hover {
+  color: #fff;
+  text-shadow: 0 0 10px var(--design-neon, #ffffff);
+}
+
+.statusHeader {
+  position: absolute;
+  top: -55px; /* Movido para cima do botão de sincronizar frequência de cor */
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.statusLabel {
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.6em;
+  padding: 8px 18px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  backdrop-filter: blur(12px);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.2);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  animation: uiRainbowSync 84s infinite, scanLabel 3s linear infinite;
+  animation-delay: -81.58s, 0s;
+}
+
+.statusLight {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px #ffffff, 0 0 20px rgba(255, 255, 255, 0.4);
+  animation: lightPulse 1.5s infinite ease-in-out;
+  flex-shrink: 0;
+}
+
+@keyframes lightPulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.8); box-shadow: 0 0 5px #00ffaa; }
+  50% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 15px #00ffaa, 0 0 30px rgba(0, 255, 170, 0.6); }
+}
+
+@keyframes scanLabel {
+  0%, 100% { opacity: 0.5; filter: hue-rotate(0deg); }
+  50% { opacity: 1; filter: hue-rotate(20deg); }
+}
+
+.forgedLink {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+}
+
+.forgedLink:hover {
+  color: #fff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+  letter-spacing: 2px;
+}
+
+.errorOverlay, .successOverlay {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  padding: 12px 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  z-index: 100;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.errorOverlay {
+  background: rgba(255, 60, 60, 0.15);
+  border-color: rgba(255, 60, 60, 0.5);
+  color: #ff3c3c;
+  box-shadow: 0 0 20px rgba(255, 60, 60, 0.2);
+}
+
+.successOverlay {
+  background: rgba(0, 255, 170, 0.15);
+  border-color: rgba(0, 255, 170, 0.5);
+  color: #00ffaa;
+  box-shadow: 0 0 20px rgba(0, 255, 170, 0.2);
+}
+
+.errorOverlay span, .successOverlay span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.3;
+}
+
+.closeAlert {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.closeAlert:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.statusFooter {
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+  width: 100%;
+}
+
+/* --- FULL SCREEN GIANT CRYSTAL FRACTURE --- */
+.crystalBackground {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Fundo sutil de luz sincronizado com o scanner (z-index negativo para ficar atrás dos shards) */
+.topLightGlow {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: -2;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0, 255, 170, 0.8) 0%, rgba(0, 255, 170, 0.35) 40%, rgba(0, 255, 170, 0.1) 80%, transparent 100%);
+  filter: drop-shadow(0 0 40px rgba(0, 255, 170, 0.8)) blur(5px);
+  
+  animation: uiRainbowSync 84s infinite;
+  animation-delay: -81.58s;
+}
+
+/* O pequeno núcleo negro de retenção da luz (Um círculo preto/abismo) */
+.voidCoreWrapper {
+  position: absolute;
+  top: -2vh; left: calc(50vw - 3vh);
+  width: 6vh; height: 6vh;
+  z-index: -1;
+  animation: uiRainbowSync 84s infinite;
+  animation-delay: -81.58s;
+}
+
+.voidCore {
+  width: 100%; height: 100%;
+  background: black;
+  border-radius: 50%;
+  box-shadow: 0 0 30px 15px rgba(0, 0, 0, 0.95), inset 0 0 10px rgba(0, 255, 170, 0.3);
+  animation: corePulse 4s infinite alternate;
+}
+.voidCore::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1.5vh; height: 1.5vh;
+  background: rgba(0, 255, 170, 1);
+  border-radius: 50%;
+  box-shadow: 0 0 40px 15px rgba(0, 255, 170, 1), 0 0 120px 50px rgba(0, 255, 170, 0.7), 0 0 250px 100px rgba(0, 255, 170, 0.3);
+}
+
+@keyframes corePulse {
+  0% { transform: scale(1); box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.9); }
+  100% { transform: scale(1.1); box-shadow: 0 0 30px 15px rgba(0, 0, 0, 1), inset 0 0 15px rgba(0, 255, 170, 0.5); }
+}
+
+/* Cacos de vidro perdidos em volta da fratura */
+.splinter {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.1) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(5px);
+  z-index: 3;
+  animation: floatSplinter 8s infinite ease-in-out alternate;
+  transform-origin: center;
+}
+
+.sp1 { top: 5%; left: 44%; width: 20px; height: 35px; clip-path: polygon(100% 100%, 0 40%, 60% 0); background: linear-gradient(135deg, rgba(100, 100, 100, 0.8), rgba(200, 200, 200, 0.2)); --sx: -15px; --sy: 10px; --sr: 25deg; }
+.sp2 { top: 7%; left: 51%; width: 15px; height: 30px; clip-path: polygon(0 100%, 100% 30%, 20% 0); background: linear-gradient(135deg, rgba(120, 120, 120, 0.8), rgba(220, 220, 220, 0.2)); --sx: 20px; --sy: 15px; --sr: -45deg; }
+.sp3 { top: 10%; left: 47%; width: 25px; height: 25px; clip-path: polygon(50% 0, 100% 100%, 0 80%); background: linear-gradient(135deg, rgba(80, 80, 80, 0.8), rgba(180, 180, 180, 0.2)); --sx: -10px; --sy: 25px; --sr: 15deg; }
+.sp4 { top: 4%; left: 48%; width: 12px; height: 28px; clip-path: polygon(50% 0, 100% 100%, 0 100%); background: linear-gradient(135deg, rgba(150, 150, 150, 0.9), rgba(250, 250, 250, 0.3)); --sx: 0px; --sy: 20px; --sr: 180deg; }
+.sp5 { top: 8%; left: 53%; width: 18px; height: 32px; clip-path: polygon(0 0, 100% 20%, 50% 100%); background: linear-gradient(135deg, rgba(110, 110, 110, 0.8), rgba(210, 210, 210, 0.2)); --sx: 15px; --sy: 15px; --sr: 90deg; }
+.sp6 { top: 6%; left: 49%; width: 22px; height: 22px; clip-path: polygon(20% 0, 100% 40%, 0 100%); background: linear-gradient(135deg, rgba(90, 90, 90, 0.8), rgba(190, 190, 190, 0.2)); --sx: -20px; --sy: 10px; --sr: -30deg; }
+.sp7 { top: 3%; left: 46%; width: 14px; height: 24px; clip-path: polygon(0 0, 100% 0, 50% 100%); background: linear-gradient(135deg, rgba(130, 130, 130, 0.8), rgba(230, 230, 230, 0.2)); --sx: -10px; --sy: -5px; --sr: 60deg; }
+.sp8 { top: 9%; left: 52%; width: 28px; height: 16px; clip-path: polygon(0 50%, 100% 0, 80% 100%); background: linear-gradient(135deg, rgba(140, 140, 140, 0.8), rgba(240, 240, 240, 0.2)); --sx: 25px; --sy: 10px; --sr: -15deg; }
+
+@keyframes floatSplinter {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(var(--sx), var(--sy)) rotate(var(--sr)); }
+}
+
+.crystalShard {
+  --crack-mask: 
+    linear-gradient(15deg, transparent 40.1%, black 40.2%, black 40.4%, transparent 40.5%),
+    linear-gradient(-25deg, transparent 65.1%, black 65.2%, black 65.3%, transparent 65.4%),
+    linear-gradient(80deg, transparent 20.15%, black 20.2%, black 20.25%, transparent 20.3%),
+    linear-gradient(-10deg, transparent 80.15%, black 80.2%, black 80.25%, transparent 80.3%);
+  
+  --crack-bg: 
+    linear-gradient(15deg, transparent 39.8%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,1) 40.1%, rgba(0,0,0,1) 40.5%, rgba(0,0,0,0.8) 41%, transparent 41.5%),
+    linear-gradient(-25deg, transparent 64.9%, rgba(255,255,255,0.9) 65%, rgba(255,255,255,1) 65.1%, rgba(0,0,0,0.9) 65.4%, rgba(0,0,0,0.6) 65.8%, transparent 66.2%),
+    linear-gradient(80deg, transparent 20%, rgba(255,255,255,0.6) 20.1%, rgba(0,0,0,0.7) 20.3%, transparent 20.4%),
+    linear-gradient(-10deg, transparent 80%, rgba(255,255,255,0.5) 80.1%, rgba(0,0,0,0.8) 80.3%, transparent 80.4%);
+  
+  --crack-size: 35vw 35vh, 45vw 45vh, 20vw 50vh, 50vw 20vh;
+
+  position: absolute;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  /* Bordas hiperiluminadas com forte Bevel simulando vidro grosso/pesado */
+  border-top: 2px solid rgba(255, 255, 255, 0.9);
+  border-left: 2px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.9);
+  border-right: 2px solid rgba(0, 0, 0, 0.7);
+  box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.95), inset 20px 20px 60px rgba(255, 255, 255, 0.2), 0 25px 45px rgba(0,0,0,0.95);
+  backdrop-filter: blur(14px) saturate(1.8);
+  z-index: 0;
+  pointer-events: auto; /* Permite interação com os shards */
+  animation: floatGiantShard 10s infinite ease-in-out alternate;
+  transform-origin: 50% 0%;
+
+  /* RECORTANDO BURACOS FÍSICOS NO VIDRO: A subtração (exclude) faz a linha de crack-mask ser recortada do fundo branco sólido! */
+  -webkit-mask-image: var(--crack-mask), linear-gradient(#fff, #fff);
+  -webkit-mask-size: var(--crack-size), 100% 100%;
+  -webkit-mask-composite: xor;
+  mask-image: var(--crack-mask), linear-gradient(#fff, #fff);
+  mask-size: var(--crack-size), 100% 100%;
+  mask-composite: exclude;
+}
+
+.shardPulseOverlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 50%, transparent 80%);
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: overlay;
+}
+
+/* Only pure glass background and physical mask remains. Drawn scratches removed to let images shine completely unobstructed. */
+
+/* ====== ALIEN GLOBAL SCANNER ====== */
+.globalScanner {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 50;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  animation: intelligentAlienSweep 7s linear infinite, alienRainbowCycle 84s infinite;
+}
+
+.scannerLine {
+  position: absolute;
+  top: 0; right: 0; /* Align right so translate handles its leading edge */
+  height: 100%; width: 10vw; /* Rastro curtíssimo e veloz */
+  background: linear-gradient(
+    90deg, 
+    transparent 0%, 
+    rgba(255, 0, 0, 0.1) 70%, 
+    rgba(255, 0, 0, 0.5) 95%, 
+    rgba(255, 255, 255, 1) 99.8%,
+    transparent 100%
+  );
+  box-shadow: 10px 0 25px rgba(255, 0, 0, 0.5); /* Sutil */
+  /* Efeito de glitch/ruptura física atrás do laser */
+  backdrop-filter: blur(3px) contrast(150%) hue-rotate(45deg);
+  -webkit-backdrop-filter: blur(3px) contrast(150%) hue-rotate(45deg);
+}
+
+.scannerGrid {
+  display: none; /* Desativado: estética limpa Cyberpunk solicitada */
+}
+
+@keyframes intelligentAlienSweep {
+  0%, 1% { transform: translateX(-100vw); opacity: 0; }
+  2% { opacity: 1; transform: translateX(-100vw); }
+  42% { transform: translateX(10vw); opacity: 1; }
+  45% { transform: translateX(10vw); opacity: 0; }
+  100% { transform: translateX(-100vw); opacity: 0; }
+}
+
+@keyframes alienRainbowCycle {
+  /* Sync with uiRainbowSync - 7 States */
+  0%, 13.5%      { filter: hue-rotate(200deg); }   /* Pure Red */
+  14.28%, 27.7%  { filter: hue-rotate(230deg); }   /* Orange */
+  28.57%, 42.0%  { filter: hue-rotate(260deg); }   /* Yellow */
+  42.85%, 56.3%  { filter: hue-rotate(320deg); }   /* Green */
+  57.14%, 70.6%  { filter: hue-rotate(30deg); }    /* Baby Blue */
+  71.42%, 84.9%  { filter: hue-rotate(80deg); }    /* Dark Blue */
+  85.71%, 99.2%  { filter: hue-rotate(130deg); }   /* Purple */
+  100%           { filter: hue-rotate(200deg); }
+}
+
+@keyframes floatGiantShard {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(var(--crack-x), var(--crack-y)) scale(1.03); }
+}
+
+.reflectionWrapper {
+  position: absolute;
+  width: 50vh; height: 50vh;
+  transform: translate(-50%, -50%) scale(0.15);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  /* Borda de sombra circular e moldura técnica */
+  border: 1.5px solid var(--shard-accent, rgba(255, 255, 255, 0.3));
+  box-shadow: 
+    inset 0 0 80px rgba(0, 0, 0, 0.95), 
+    0 0 20px var(--shard-accent, rgba(255, 255, 255, 0.1)),
+    0 0 40px rgba(0, 0, 0, 0.7);
+  background: #000; /* Esfera negra base */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s ease;
+  
+  /* Sincronizado: 3.5s pequena / 2.5s crescendo (com cor) / 1s voltando = 7s total */
+  animation: sphereProtocol 7s infinite ease-in-out;
+}
+
+@keyframes sphereProtocol {
+  /* 0 - 3.5s: Pequena, negra, pulsando devagar (0% - 50%) */
+  0%, 50% { 
+    transform: translate(-50%, -50%) scale(0.12); 
+    filter: brightness(0); 
+    background: #000;
+  }
+  25% { 
+    transform: translate(-50%, -50%) scale(0.18); 
+    filter: brightness(0);
+    background: #000;
+  }
+  
+  /* 3.5s - 6s: Crescendo devagar e ILUMINANDO (50% - 85.7%) */
+  85.7% { 
+    transform: translate(-50%, -50%) scale(1); 
+    filter: brightness(1); 
+    background: transparent;
+  }
+  
+  /* 6s - 7s: Voltando ao tamanho pequeno (85.7% - 100%) */
+  100% { 
+    transform: translate(-50%, -50%) scale(0.12); 
+    filter: brightness(0); 
+    background: #000;
+  }
+}
+
+
+.shardReflection {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.85;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+/* --- Efeitos base do Cristal Gigante --- */
+.crystalShard {
+  /* Sincronizado: Hibernação cinza / Manifestação colorida a cada 7s */
+  animation: 
+    floatGiantShard 12s infinite ease-in-out alternate,
+    shardColorPulse 7s infinite ease-in-out;
+}
+
+/* Ciclo de Manifestação: 7s total */
+@keyframes shardColorPulse {
+  /* 0 - 3.5s: Hibernação cinza absoluto (0% - 50%) */
+  0%, 50% { 
+    filter: grayscale(100%) brightness(0.6) contrast(0.9); 
+  }
+  
+  /* 3.5s - 6s: Manifestação cromática sincronizada (50% - 85.7%) */
+  65% { 
+    filter: grayscale(0%) brightness(1.3) contrast(1.2); 
+    text-shadow: 0 0 20px rgba(255,255,255,0.4);
+  }
+  85.7% { 
+    filter: grayscale(0%) brightness(1.1) contrast(1.1); 
+  }
+  
+  /* 6s - 7s: Dissolução e retorno às cinzas (85.7% - 100%) */
+  100% { 
+    filter: grayscale(100%) brightness(0.6) contrast(0.9); 
+  }
+}
+
+/* 8 Equal Shards mapping outward from exact Top Center (50% 0%) with subtle, elegant cracks between edges */
+
+/* Shard 1 */
+.shard1 {
+  clip-path: polygon(50% 0%, 0% 0%, 0% 25%, 22% 16%);
+  background: linear-gradient(135deg, rgba(173, 216, 230, 0.35), rgba(173, 216, 230, 0.05), transparent);
+  --crack-x: -12px; --crack-y: 6px;
+  --crack-angle: 12deg; --crack-scale: 1;
+  --shard-accent: #add8e6;
+}
+.shard1 .reflectionWrapper { left: 10%; top: 20%; }
+.shard1 .shardReflection { filter: sepia(1) saturate(5) hue-rotate(160deg) contrast(150%); }
+
+/* Shard 2 */
+.shard2 {
+  clip-path: polygon(50% 0%, 22% 16%, 0% 25%, 0% 55%, 28% 30%);
+  background: linear-gradient(145deg, rgba(0, 255, 0, 0.35), rgba(0, 255, 0, 0.05), transparent);
+  --crack-x: -8px; --crack-y: 10px;
+  --crack-angle: -25deg; --crack-scale: 1.1;
+  --shard-accent: #00ff00;
+}
+.shard2 .reflectionWrapper { left: 15%; top: 35%; }
+.shard2 .shardReflection { filter: sepia(1) saturate(5) hue-rotate(80deg) contrast(150%); object-position: center 30%; }
+
+/* Shard 3 */
+.shard3 {
+  clip-path: polygon(50% 0%, 28% 30%, 0% 55%, 0% 100%, 12% 100%, 27% 55%);
+  background: linear-gradient(160deg, rgba(0, 0, 139, 0.4), rgba(0, 0, 139, 0.1), transparent);
+  --crack-x: -3px; --crack-y: 12px;
+  --crack-angle: 50deg; --crack-scale: 0.9;
+  --shard-accent: #00008b;
+}
+.shard3 .reflectionWrapper { left: 20%; top: 60%; }
+.shard3 .shardReflection { filter: sepia(1) saturate(5) hue-rotate(190deg) contrast(150%); object-position: center 30%; }
+
+/* Shard 4 */
+.shard4 {
+  clip-path: polygon(50% 0%, 27% 55%, 12% 100%, 50% 100%, 50% 55%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.1), transparent);
+  --crack-x: 0px; --crack-y: 15px;
+  --crack-angle: -10deg; --crack-scale: 1.2;
+  --shard-accent: #ffffff;
+}
+.shard4 .reflectionWrapper { left: 35%; top: 75%; }
+.shard4 .shardReflection { filter: grayscale(100%) brightness(1.8) contrast(150%); }
+
+/* Shard 5 */
+.shard5 {
+  clip-path: polygon(50% 0%, 50% 55%, 50% 100%, 88% 100%, 73% 55%);
+  background: linear-gradient(200deg, rgba(255, 255, 0, 0.4), rgba(255, 255, 0, 0.1), transparent);
+  --crack-x: 3px; --crack-y: 12px;
+  --crack-angle: 85deg; --crack-scale: 0.8;
+  --shard-accent: #ffff00;
+}
+.shard5 .reflectionWrapper { left: 65%; top: 75%; }
+.shard5 .shardReflection { filter: sepia(1) saturate(5) hue-rotate(10deg) contrast(150%); }
+
+/* Shard 6 */
+.shard6 {
+  clip-path: polygon(50% 0%, 73% 55%, 88% 100%, 100% 100%, 100% 55%, 72% 30%);
+  background: linear-gradient(220deg, rgba(147, 112, 219, 0.4), rgba(147, 112, 219, 0.1), transparent);
+  --crack-x: 8px; --crack-y: 10px;
+  --crack-angle: -40deg; --crack-scale: 1.1;
+  --shard-accent: #9370db;
+}
+.shard6 .reflectionWrapper { left: 80%; top: 60%; }
+.shard6 .shardReflection { filter: sepia(1) saturate(5) hue-rotate(240deg) contrast(150%); object-position: center 30%; }
+
+/* Shard 7 */
+.shard7 {
+  clip-path: polygon(50% 0%, 72% 30%, 100% 55%, 100% 25%, 78% 16%);
+  background: linear-gradient(250deg, rgba(255, 0, 0, 0.4), rgba(255, 0, 0, 0.1), transparent);
+  --crack-x: 12px; --crack-y: 6px;
+  --crack-angle: -15deg; --crack-scale: 1;
+  --shard-accent: #ff0000;
+}
+.shard7 .reflectionWrapper { left: 85%; top: 35%; }
+.shard7 .shardReflection { filter: sepia(1) saturate(10) hue-rotate(320deg) contrast(150%); object-position: center 30%; }
+
+/* Shard 8 */
+.shard8 {
+  clip-path: polygon(50% 0%, 78% 16%, 100% 25%, 100% 0%);
+  background: linear-gradient(270deg, rgba(255, 140, 0, 0.4), rgba(255, 140, 0, 0.1), transparent);
+  --crack-x: 15px; --crack-y: 2px;
+  --crack-angle: -5deg; --crack-scale: 0.9;
+  --shard-accent: #ff8c00;
+}
+.shard8 .reflectionWrapper { left: 90%; top: 22%; }
+.shard8 .shardReflection { filter: sepia(1) saturate(5) hue-rotate(0deg) contrast(150%); }
+
+/* Responsividade básica para o layout místico */
+@media (max-width: 1024px) {
+  .sidePanel {
+    display: none;
+  }
+  .container {
+    justify-content: center;
+  }
+}
+
+.langSelector {
+  position: absolute;
+  bottom: 2.0vh;
+  left: calc(50% + 0.4vw);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 25;
+}
+
+.langBtn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.langBtn:hover {
+  text-shadow: 0 0 10px #fff;
+  opacity: 1 !important;
+}
+
+.langSeparator {
+  width: 1px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.2);
+}
+

@@ -1,34 +1,47 @@
+@import url('https://fonts.cdnfonts.com/css/cf-glitch-city');
+@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
+
 :root {
-  /* Core Palette */
-  --bg-primary: #05070a;
-  --bg-secondary: #0a0d14;
-  --text-primary: #f0f2f5;
-  --text-secondary: #94a3b8;
+  /* Core Palette (Platinum Cyberpunk) */
+  --bg-primary: #020202; /* Deep Space Black */
+  --bg-secondary: #0a0a0c; /* Cold Metal */
+  --text-primary: #ffffff; /* Pure White */
+  --text-secondary: #a1a1aa; /* Silver Dust */
   
-  /* Action Auras (HSL) */
-  --aura-care: 142, 70%, 45%;
-  --aura-feel: 350, 80%, 65%;
-  --aura-seek: 45, 90%, 55%;
-  --aura-connect: 190, 85%, 50%;
-  --aura-express: 280, 75%, 60%;
-  --aura-perceive: 240, 60%, 55%;
-  --aura-serve: 40, 80%, 50%;
-  --aura-observe: 210, 20%, 60%;
-  --aura-release: 0, 0%, 90%;
-  --aura-integrate: 300, 50%, 60%;
-  --aura-create: 20, 90%, 55%;
-  --aura-transcend: 260, 20%, 95%;
+  /* Metallic Accents */
+  --white-primary: #ffffff;
+  --silver-accent: #e5e5e5;
+  --silver-dark: #71717a;
+  --metal-dark: #18181b;
+  
+  /* Action Hues (Platinum Theme) */
+  --aura-care: 0, 0%, 100%; /* Pure White */
+  --aura-feel: 0, 0%, 85%; /* Platinum */
+  --aura-seek: 210, 10%, 45%; /* Steel */
+  --aura-connect: 0, 0%, 95%; /* Clean White */
+  --aura-express: 0, 0%, 100%; /* Electric White */
+  --aura-perceive: 0, 0%, 98%; /* Bright Silver */
+  --aura-serve: 210, 5%, 35%; /* Matte Steel */
+  --aura-observe: 215, 10%, 20%; /* Black Chrome */
+  --aura-release: 0, 0%, 100%; /* White Light */
+  --aura-integrate: 0, 0%, 90%; /* Soft Silver */
+  --aura-create: 210, 10%, 60%; /* Industrial Steel */
+  --aura-transcend: 0, 0%, 100%; /* Astral White */
 
   /* Default current aura */
-  --aura-current: var(--aura-connect);
+  --aura-current: var(--aura-express);
 
-  /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: blur(12px);
+  /* Glassmorphism (Platinum) */
+  --glass-bg: rgba(10, 10, 12, 0.3);
+  --glass-border: rgba(255, 255, 255, 0.12); /* White border */
+  --glass-blur: blur(40px);
+  
+  /* Cyber Effects */
+  --neon-glow: 0 0 15px rgba(255, 255, 255, 0.2);
+  --metal-gradient: linear-gradient(135deg, #18181b 0%, #000000 100%);
   
   /* Transitions */
-  --ease-organic: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-organic: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * {
@@ -77,6 +90,7 @@ a {
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
+  box-shadow: inset 0 0 20px rgba(255, 204, 51, 0.05);
 }
 
 .aura-glow {
