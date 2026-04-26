@@ -907,51 +907,42 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem;
-  border-radius: 1.5rem;
+  border-radius: 0; /* Pontas quadradas/tech */
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 1rem;
-  background: linear-gradient(145deg, rgba(28, 28, 30, 0.15) 0%, rgba(10, 10, 12, 0.25) 100%);
-  position: relative;
+  background: linear-gradient(145deg, rgba(28, 28, 30, 0.1) 0%, rgba(10, 10, 12, 0.2) 100%);
+  position: relative; /* Para bordas customizadas */
+  border: none;
   backdrop-filter: blur(25px);
-  transition: transform 0.4s var(--ease-organic), box-shadow 0.6s ease;
-  border: none; /* Border is handled by pseudo-element */
-}
-
-/* Quadrille border with invisible corners */
-.manifestation::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 1.5rem;
-  padding: 1.5px;
-  border: 1.5px dashed var(--vibe-color, rgba(255, 255, 255, 0.3));
-  mask-image: 
-    linear-gradient(to right, transparent 40px, #000 40px, #000 calc(100% - 40px), transparent calc(100% - 40px)),
-    linear-gradient(to bottom, transparent 40px, #000 40px, #000 calc(100% - 40px), transparent calc(100% - 40px));
-  mask-composite: add;
-  -webkit-mask-composite: destination-over; /* For Safari/webkit cross-shaped mask logic */
-  pointer-events: none;
-  opacity: 0.8;
-  transition: border-color 0.6s ease;
-}
-
-/* Secondary glow layer */
-.manifestation::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 1.5rem;
   box-shadow: 
     0 10px 40px rgba(0, 0, 0, 0.4),
     0 0 12px var(--vibe-glow, rgba(255, 255, 255, 0.1)),
     inset 0 0 10px var(--vibe-glow, rgba(255, 255, 255, 0.05));
-  pointer-events: none;
-  z-index: -1;
-  transition: box-shadow 0.6s ease;
+  transition: transform 0.4s var(--ease-organic), border-color 0.6s ease, box-shadow 0.6s ease;
 }
+
+/* Bordas quadriculadas (checkered/dashed) com pontas invisíveis */
+.manifestation::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    /* Linha Superior */
+    repeating-linear-gradient(to right, var(--vibe-color, #fff) 0 5px, transparent 5px 10px) top center / calc(100% - 60px) 1.5px,
+    /* Linha Inferior */
+    repeating-linear-gradient(to right, var(--vibe-color, #fff) 0 5px, transparent 5px 10px) bottom center / calc(100% - 60px) 1.5px,
+    /* Linha Esquerda */
+    repeating-linear-gradient(to bottom, var(--vibe-color, #fff) 0 5px, transparent 5px 10px) left center / 1.5px calc(100% - 60px),
+    /* Linha Direita */
+    repeating-linear-gradient(to bottom, var(--vibe-color, #fff) 0 5px, transparent 5px 10px) right center / 1.5px calc(100% - 60px);
+  background-repeat: no-repeat;
+  opacity: 0.6;
+}
+
 
 .manifestHeader {
   display: flex;
