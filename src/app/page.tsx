@@ -1868,9 +1868,9 @@ function HomeContent() {
               <button 
                 className={styles.storyToggleBtn} 
                 onClick={() => setShowRealStories(!showRealStories)}
-                title={showRealStories ? 'Ver Espiritual' : 'Ver Realidade'}
+                title={showRealStories ? 'Ver Espiritualidade' : 'Ver Realidade'}
               >
-                <span>{showRealStories ? 'Espiritual' : 'Realidade'}</span>
+                <span>{showRealStories ? 'Espiritualidade' : 'Realidade'}</span>
               </button>
             </div>
 
@@ -2300,7 +2300,7 @@ function HomeContent() {
 
                           <p className={styles.splashText}>
                             <strong>@{activeIntegrationSplash.name}</strong> aceitou sua presença.<br/>
-                            Bem-vindo ao Mundo Espiritual.
+                            Bem-vindo à Espiritualidade.
                           </p>
                           <div className={styles.splashFooter}>
                             Frequência Estabilizada • Clique no X para retornar
