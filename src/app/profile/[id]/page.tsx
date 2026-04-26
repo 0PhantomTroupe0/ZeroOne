@@ -22,38 +22,38 @@ interface Profile {
   id: string;
   username: string;
   full_name: string;
-  avatar_url: string;
+  avatar_url: string | null;
   bio: string;
   created_at: string;
-  city?: string;
-  status?: string;
-  status_updated_at?: string;
+  city?: string | null;
+  status?: string | null;
+  status_updated_at?: string | null;
   cloak_enabled?: boolean;
   hat_enabled?: boolean;
   selected_pedra?: number;
   selected_varinha?: number;
-  nexo_color?: string;
-  hat_color?: string;
-  cloak_color?: string;
-  banner_url?: string;
-  stone_frame_type?: string;
-  hat_type?: string;
-  cloak_type?: string;
-  wand_type?: string;
-  avatar_mode?: string;
-  eye_sclera_color?: string;
-  eye_iris_color?: string;
-  eye_border_color?: string;
-  eye_pupil_color?: string;
-  eye_secondary_color?: string;
+  nexo_color?: string | null;
+  hat_color?: string | null;
+  cloak_color?: string | null;
+  banner_url?: string | null;
+  stone_frame_type?: string | null;
+  hat_type?: string | null;
+  cloak_type?: string | null;
+  wand_type?: string | null;
+  avatar_mode?: string | null;
+  eye_sclera_color?: string | null;
+  eye_iris_color?: string | null;
+  eye_border_color?: string | null;
+  eye_pupil_color?: string | null;
+  eye_secondary_color?: string | null;
   eye_veins_active?: boolean;
   eye_veins_color?: string | null;
   eye_lashes_active?: boolean;
   eye_lashes_color?: string | null;
   observer_mode_active?: boolean;
-  age?: number;
+  age?: number | null;
   level?: number;
-  cloak_emblem_type?: string;
+  cloak_emblem_type?: string | null;
   cloak_emblem_color?: string | null;
   cloak_emblem_filled?: boolean;
   stone_internal_color?: string | null;
@@ -63,6 +63,10 @@ interface Profile {
   cloak_emblem_secondary_color?: string | null;
   cloak_color_secondary?: string | null;
   cloak_color_tertiary?: string | null;
+  real_name?: string | null;
+  character_name?: string | null;
+  world_name?: string | null;
+  world_image?: string | null;
 }
 
 interface Manifestation {
@@ -705,30 +709,6 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     try {
       let imageUrl = null;
       let audioUrl = null;
-      let currentWorldUrl = null;
-
-      if (worldFile) {
-        const fileName = `world-${Date.now()}.jpg`;
-        const filePath = `${currentUser.id}/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(filePath, worldFile, { 
-            upsert: true,
-            contentType: 'image/jpeg'
-          });
-
-        if (uploadError) {
-          console.error("World Image upload error:", uploadError);
-          throw uploadError;
-        }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(filePath);
-        
-        currentWorldUrl = publicUrl;
-      }
 
       if (attachedFiles.image) {
         const fileExt = attachedFiles.image.name.split('.').pop();
@@ -812,8 +792,11 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
 
       // 4. Update the profile with the new avatar URL
-      const currentType = profile.selected_pedra > 0 ? 'pedra' : 'avatar';
-      const currentValue = profile.selected_pedra > 0 ? profile.selected_pedra : profile.avatar_url;
+      if (!profile) throw new Error("Perfil não carregado");
+
+      const selectedPedra = profile.selected_pedra || 0;
+      const currentType = selectedPedra > 0 ? 'pedra' : 'avatar';
+      const currentValue = selectedPedra > 0 ? selectedPedra : (profile.avatar_url || '');
       const newHistory = addToHistory(currentType, currentValue, profile.stone_history || []);
 
       const { error: updateError } = await supabase
@@ -948,8 +931,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const selectFromHistory = async (item: { type: 'pedra' | 'avatar', value: any }) => {
     if (!isOwnProfile || !profile) return;
     try {
-      const currentType = profile.selected_pedra > 0 ? 'pedra' : 'avatar';
-      const currentValue = profile.selected_pedra > 0 ? profile.selected_pedra : profile.avatar_url;
+      const selectedPedra = profile.selected_pedra || 0;
+      const currentType = selectedPedra > 0 ? 'pedra' : 'avatar';
+      const currentValue = selectedPedra > 0 ? selectedPedra : (profile.avatar_url || '');
       const newHistory = addToHistory(currentType, currentValue, profile.stone_history || []);
 
       const updateData: any = { stone_history: newHistory };
@@ -1576,9 +1560,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                           <button
                             className={`${styles.assetMiniBtn} ${activeMenu === tool.id ? styles.btnActive : ''}`}
                             onClick={() => tool.onClick ? tool.onClick() : setActiveMenu(activeMenu === tool.id ? null : tool.id)}
-                            onContextMenu={tool.onContextMenu}
-                            style={{ color: profile.nexo_color || '#00f3ff' }}
-                            title={tool.title}
+                            style={{ color: (profile?.nexo_color || '#00f3ff') as any }}
+                            title={(tool as any).title}
                           >
                             {tool.icon}
                             {tool.extra}
