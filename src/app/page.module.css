@@ -411,7 +411,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 32px;
+  border-radius: 0; /* Pontas quadradas para o efeito de borda reta */
   display: flex;
   flex-direction: column;
   z-index: 850;
@@ -422,6 +422,26 @@
   border: none;
   pointer-events: auto; /* Restaura interações — o wrapper pai tem pointer-events: none */
 }
+
+/* Bordas retas com pontas invisíveis para a Janela Geral */
+.floatingFluxo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    /* Linha Superior */
+    linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)) top center / calc(100% - 120px) 2px,
+    /* Linha Inferior */
+    linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)) bottom center / calc(100% - 120px) 2px,
+    /* Linha Esquerda */
+    linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)) left center / 2px calc(100% - 120px),
+    /* Linha Direita */
+    linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)) right center / 2px calc(100% - 120px);
+  background-repeat: no-repeat;
+  z-index: 900;
+}
+
 
 
 @keyframes brushedFluxoShimmer {
@@ -932,13 +952,13 @@
   pointer-events: none;
   background:
     /* Linha Superior */
-    repeating-linear-gradient(to right, var(--vibe-color, #fff) 0 5px, transparent 5px 10px) top center / calc(100% - 60px) 1.5px,
+    linear-gradient(var(--vibe-color, #fff), var(--vibe-color, #fff)) top center / calc(100% - 60px) 1.5px,
     /* Linha Inferior */
-    repeating-linear-gradient(to right, var(--vibe-color, #fff) 0 5px, transparent 5px 10px) bottom center / calc(100% - 60px) 1.5px,
+    linear-gradient(var(--vibe-color, #fff), var(--vibe-color, #fff)) bottom center / calc(100% - 60px) 1.5px,
     /* Linha Esquerda */
-    repeating-linear-gradient(to bottom, var(--vibe-color, #fff) 0 5px, transparent 5px 10px) left center / 1.5px calc(100% - 60px),
+    linear-gradient(var(--vibe-color, #fff), var(--vibe-color, #fff)) left center / 1.5px calc(100% - 60px),
     /* Linha Direita */
-    repeating-linear-gradient(to bottom, var(--vibe-color, #fff) 0 5px, transparent 5px 10px) right center / 1.5px calc(100% - 60px);
+    linear-gradient(var(--vibe-color, #fff), var(--vibe-color, #fff)) right center / 1.5px calc(100% - 60px);
   background-repeat: no-repeat;
   opacity: 0.6;
 }
