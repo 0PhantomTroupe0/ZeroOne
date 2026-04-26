@@ -1828,9 +1828,9 @@ function HomeContent() {
               <button 
                 className={styles.storyToggleBtn} 
                 onClick={() => setShowRealStories(!showRealStories)}
-                title={showRealStories ? 'Ver Espiritual' : 'Ver Físico'}
+                title={showRealStories ? 'Ver Espiritual' : 'Ver Realidade'}
               >
-                <span>{showRealStories ? 'Espiritual' : 'Físico'}</span>
+                <span>{showRealStories ? 'Espiritual' : 'Realidade'}</span>
               </button>
             </div>
 
