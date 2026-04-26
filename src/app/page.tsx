@@ -641,14 +641,37 @@ function HomeContent() {
       .channel('universal-fluxo')
       .on('postgres_changes', 
         { event: 'INSERT', schema: 'public', table: 'consciousness_nodes' }, 
-        (payload) => {
+        async (payload) => {
           const newNode = payload.new as any;
           // Se for uma resposta, não adicionar ao feed principal
           if (newNode.metadata?.reply_to) return;
           // Se for um tipo reativo, não adicionar ao feed principal
           if (newNode.type === 'perceber' || newNode.type === 'observar') return;
 
-          setManifestations(prev => [newNode, ...prev]);
+          // Se o post for de um bot (conta simulada), pegar os dados locais
+          const bot = SIMULATED_ACCOUNTS[newNode.user_id];
+          if (bot) {
+            newNode.profiles = {
+              username: bot.name,
+              avatar_url: bot.avatar
+            };
+          } else {
+            // Senão, buscar o perfil no banco para exibir corretamente
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('username, avatar_url')
+              .eq('id', newNode.user_id)
+              .single();
+            
+            if (profileData) {
+              newNode.profiles = profileData;
+            }
+          }
+
+          setManifestations(prev => {
+            if (prev.find(m => m.id === newNode.id)) return prev;
+            return [newNode, ...prev];
+          });
         }
       )
       .subscribe();
@@ -1246,6 +1269,14 @@ function HomeContent() {
       if (error) throw error;
       
       if (data) {
+        // Garantir que os dados do perfil estejam anexados para exibição correta
+        if (profile) {
+          (data as any).profiles = {
+            username: profile.username,
+            avatar_url: profile.avatar_url
+          };
+        }
+
         // Registrar 'Expressar' no post original se for um repost
         if (repostTarget?.id) {
           handleToggleSentiment(repostTarget.id, 'expressar');
