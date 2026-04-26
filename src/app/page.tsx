@@ -467,6 +467,15 @@ function HomeContent() {
     }
   }, [selectedDesignColor, hexagramActive, chatAction]);
 
+  // Atualizar título da aba com o nome do usuário
+  useEffect(() => {
+    if (profile?.username) {
+      document.title = `Zero Day | ◕‿◕ | ${profile.username}`;
+    } else {
+      document.title = `Zero Day | ◕‿◕`;
+    }
+  }, [profile]);
+
   // === 12 FUNCTIONAL ACTIONS STATE ===
   const [zenMode, setZenMode] = useState(false);
   const [tagFilter, setTagFilterState] = useState<string | null>(searchTag);

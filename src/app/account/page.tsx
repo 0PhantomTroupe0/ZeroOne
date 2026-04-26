@@ -28,6 +28,15 @@ export default function AccountPage() {
     fetchData();
   }, []);
 
+  // Atualizar título da aba com o nome do usuário logado
+  useEffect(() => {
+    if (profile?.username) {
+      document.title = `Zero Day | ◕‿◕ | ${profile.username}`;
+    } else {
+      document.title = `Zero Day | ◕‿◕`;
+    }
+  }, [profile]);
+
   async function fetchData() {
     try {
       setLoading(true);

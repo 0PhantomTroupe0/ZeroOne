@@ -436,6 +436,15 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     return () => clearInterval(interval);
   }, []);
 
+  // Atualizar título da aba com o nome do usuário logado
+  useEffect(() => {
+    if (currentUserProfile?.username) {
+      document.title = `Zero Day | ◕‿◕ | ${currentUserProfile.username}`;
+    } else {
+      document.title = `Zero Day | ◕‿◕`;
+    }
+  }, [currentUserProfile]);
+
   async function fetchData() {
     try {
       setLoading(true);
