@@ -1114,7 +1114,7 @@
   margin: 0 auto;
   color: #fff;
   position: relative;
-  padding-bottom: 8px;
+  padding-bottom: calc(12px + 0.5vh);
   animation: fluxResonate 7s infinite;
 }
 
