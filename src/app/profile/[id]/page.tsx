@@ -7714,7 +7714,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     '--vibe-color': transcendActive ? (ACTION_NEON_COLORS[manifest.type] || '#ffffff') : '#ffffff',
                     '--vibe-glow': transcendActive 
                       ? (manifest.type === 'integrar' ? 'rgba(255,255,255,0.4)' : `${ACTION_NEON_COLORS[manifest.type] || '#fff'}44`)
-                      : 'rgba(255, 255, 255, 0.25)'
+                      : 'rgba(255, 255, 255, 0.25)',
+                    '--design-neon': manifest.metadata?.aura || '#00f3ff'
                   } as any}
                 >
                   <div className={styles.manifestHeader}>
