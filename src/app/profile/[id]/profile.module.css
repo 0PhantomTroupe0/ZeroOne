@@ -1487,12 +1487,12 @@
 
 /* === LAYOUT & CHAT === */
 .contentLayout {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  max-width: 100%;
+  margin: 0;
+  padding: 2rem 5vw;
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 4rem;
+  grid-template-columns: 1fr;
+  gap: 0;
   align-items: start;
 }
 
@@ -2603,6 +2603,9 @@
 
 .mainColumn {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .rightColumn {
@@ -2864,10 +2867,11 @@
 /* === ESTADOS DE CONSCIÃŠNCIA (Nascente Universal Sync) === */
 
 .floatingFluxoWrapper {
-  position: relative; /* Diferente da home que Ã© fixed, no perfil Ã© parte do layout */
+  position: relative;
   width: 100%;
   max-width: 1250px;
-  margin: -15vh auto 2rem;
+  margin-top: -55vh !important;
+  margin-left: 10vw !important;
   min-height: 800px;
   transition: min-height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 34px;
@@ -3210,7 +3214,7 @@
 /* Manifestation Styles */
 .manifestation {
   width: 92%;
-  max-width: 960px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 1.5rem;
   border-radius: 0;
@@ -3662,7 +3666,7 @@
 }
 
 .upwardShift {
-  transform: translateY(-3vh);
+  transform: translateY(-35vh);
   transition: transform 0.5s ease;
 }
 .pulseShiftDown {
