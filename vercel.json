@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/archetype-posts",
+      "schedule": "0 10 * * *"
+    }
+  ]
+}
