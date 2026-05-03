@@ -741,8 +741,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
           [nodeId]: [...(prev[nodeId] || []), data] 
         }));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Erro ao enviar percepção:", err);
+      alert("Erro ao enviar percepção: " + (err.message || "Falha técnica"));
     }
   };
 

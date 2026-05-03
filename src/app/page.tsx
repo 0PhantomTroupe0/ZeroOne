@@ -1209,8 +1209,9 @@ function HomeContent() {
         }));
         setCommentDraft(prev => ({ ...prev, [manifestId]: '' }));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Erro ao enviar percepção:", err);
+      alert("Erro ao enviar percepção: " + (err.message || "Falha técnica"));
     }
   };
 
