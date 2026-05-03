@@ -1062,13 +1062,18 @@ function HomeContent() {
           setActiveCuidarPicker(null);
           setActiveSentimentPicker(null);
 
-          if (!postComments[manifest.id]) {
-            const { data } = await supabase
-              .from('consciousness_nodes')
-              .select('*, profiles(username, avatar_url)')
-              .eq('metadata->>reply_to', manifest.id)
-              .order('created_at', { ascending: true });
-            setPostComments(prev => ({ ...prev, [manifest.id]: data || [] }));
+          // Buscar comentários se ainda não carregados ou para atualizar
+          const { data, error } = await supabase
+            .from('consciousness_nodes')
+            .select('*, profiles(username, avatar_url)')
+            .eq('type', 'perceber')
+            .eq('metadata->>reply_to', manifest.id)
+            .order('created_at', { ascending: true });
+            
+          if (!error && data) {
+            setPostComments(prev => ({ ...prev, [manifest.id]: data }));
+          } else if (error) {
+            console.error("Erro ao buscar percepções:", error);
           }
         }
         break;
@@ -1183,16 +1188,31 @@ function HomeContent() {
   const handleSendReply = async (manifestId: string) => {
     const content = commentDraft[manifestId]?.trim();
     if (!content || !user) return;
-    const { data } = await supabase.from('consciousness_nodes').insert([{
-      user_id: user.id,
-      content,
-      type: 'perceber',
-      metadata: { reply_to: manifestId, aura: 'var(--aura-perceive)' }
-    }]).select('*, profiles(username, avatar_url)').single();
-    if (data) {
-      setPostComments(prev => ({ ...prev, [manifestId]: [...(prev[manifestId] || []), data] }));
+
+    try {
+      const { data, error } = await supabase.from('consciousness_nodes').insert([{
+        user_id: user.id,
+        content,
+        type: 'perceber',
+        metadata: { 
+          reply_to: manifestId, 
+          aura: 'var(--aura-perceive)',
+          timestamp: new Date().toISOString() 
+        }
+      }]).select('*, profiles(username, avatar_url)').single();
+
+      if (error) throw error;
+
+      if (data) {
+        setPostComments(prev => ({ 
+          ...prev, 
+          [manifestId]: [...(prev[manifestId] || []), data] 
+        }));
+        setCommentDraft(prev => ({ ...prev, [manifestId]: '' }));
+      }
+    } catch (err) {
+      console.error("Erro ao enviar percepção:", err);
     }
-    setCommentDraft(prev => ({ ...prev, [manifestId]: '' }));
   };
 
   const handleActionClick = (actionId: string) => {

@@ -9,7 +9,8 @@ import {
   MoreHorizontal, Fingerprint, Activity, Compass, Zap,
   Sun, Anchor, Eye, Wind, Atom, Palette, Sparkles, Trash2,
   Camera, Flame, Settings, RefreshCw, ChevronLeft, ChevronRight, Shield,
-  Ghost, Crown, Gem, Clock, Hash, Check
+  Ghost, Crown, Gem, Clock, Hash, Check,
+  Heart, Scale, Leaf, Cloud
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import UserPresence from "@/components/UserPresence";
@@ -92,18 +93,29 @@ interface Manifestation {
 }
 
 const ACTIONS = [
-  { id: 'cuidar', name: "Cuidar", aura: "var(--aura-care)", icon: Fingerprint },
-  { id: 'sentir', name: "Sentir", aura: "var(--aura-feel)", icon: Activity },
-  { id: 'buscar', name: "Buscar", aura: "var(--aura-seek)", icon: Compass },
-  { id: 'conectar', name: "Conectar", aura: "var(--aura-connect)", icon: Share2 },
-  { id: 'expressar', name: "Expressar", aura: "var(--aura-express)", icon: Zap },
   { id: 'perceber', name: "Perceber", aura: "var(--aura-perceive)", icon: Sun },
-  { id: 'servir', name: "Servir", aura: "var(--aura-serve)", icon: Anchor },
   { id: 'observar', name: "Observar", aura: "var(--aura-observe)", icon: Eye },
-  { id: 'soltar', name: "Soltar", aura: "var(--aura-release)", icon: Wind },
-  { id: 'integrar', name: "Integrar", aura: "var(--aura-integrate)", icon: Atom },
+  { id: 'sentir', name: "Sentir", aura: "var(--aura-feel)", icon: Activity },
+  { id: 'servir', name: "Agregar", aura: "var(--aura-serve)", icon: Anchor },
+  { id: 'conectar', name: "Harmonizar", aura: "var(--aura-connect)", icon: Share2 },
+  { id: 'expressar', name: "Expressar", aura: "var(--aura-express)", icon: Zap },
   { id: 'criar', name: "Criar", aura: "var(--aura-create)", icon: Palette },
+  { id: 'buscar', name: "Sincronizar", aura: "var(--aura-seek)", icon: Compass },
+  { id: 'cuidar', name: "Emanar", aura: "var(--aura-care)", icon: Fingerprint },
+  { id: 'integrar', name: "Entrelaçar", aura: "var(--aura-integrate)", icon: Atom },
+  { id: 'soltar', name: "Purificar", aura: "var(--aura-release)", icon: Wind },
   { id: 'transcender', name: "Transcender", aura: "var(--aura-transcend)", icon: Sparkles },
+];
+
+const SEARCH_ACTIONS = [
+  { id: 'humildade', name: "Soberba <-> Humildade", aura: "#ff0000", icon: Fingerprint },
+  { id: 'generosidade', name: "Avareza <-> Generosidade", aura: "#ff6600", icon: Gem },
+  { id: 'disciplina', name: "Preguiça <-> Disciplina", aura: "#ffdd00", icon: Activity },
+  { id: 'pureza', name: "Luxúria <-> Pureza", aura: "#00ff44", icon: Shield },
+  { id: 'gratidao', name: "Inveja <-> Gratidão", aura: "#00ffff", icon: Heart },
+  { id: 'temperanca', name: "Gula <-> Temperança", aura: "#0055ff", icon: Scale },
+  { id: 'serenidade', name: "Ira <-> Serenidade", aura: "#8800ee", icon: Cloud },
+  { id: 'natureza', name: "Natureza <-> Fantasia", aura: "#ffffff", icon: Leaf },
 ];
 
 const SIMULATED_ACCOUNTS: Record<string, { name: string; avatar: string; phrase: string }> = {
@@ -128,14 +140,12 @@ const VIRTUES = [
 ];
 
 const CARE_EMOJIS = [
-  { emoji: '🤍', label: 'Cuidar' },
-  { emoji: '🔥', label: 'Inspirar' },
-  { emoji: '✨', label: 'Brilhar' },
-  { emoji: '🤲', label: 'Doar' },
-  { emoji: '🌿', label: 'Nutrir' },
-  { emoji: '🌀', label: 'Fluir' },
-  { emoji: '💎', label: 'Valorizar' },
-  { emoji: '🔆', label: 'Iluminar' },
+  { emoji: '💙', label: 'Amor' },
+  { emoji: '🫂', label: 'Presença' },
+  { emoji: '✨', label: 'Luz' },
+  { emoji: '🍵', label: 'Cuidado' },
+  { emoji: '🧘', label: 'Paz' },
+  { emoji: '🌊', label: 'Fluidez' }
 ];
 
 const RITUAL_COLORS = [
@@ -156,14 +166,12 @@ const ACTION_NEON_COLORS: Record<string, string> = {
 };
 
 const FEELING_SYMBOLS = [
-  { id: 'paz', sym: '🕊️', name: 'Paz' },
-  { id: 'fogo', sym: '🔥', name: 'Fogo' },
-  { id: 'agua', sym: '🌊', name: 'Água' },
-  { id: 'terra', sym: '🌱', name: 'Terra' },
-  { id: 'ar', sym: '🌪️', name: 'Ar' },
-  { id: 'luz', sym: '✨', name: 'Luz' },
-  { id: 'sombra', sym: '🌑', name: 'Sombra' },
-  { id: 'amor', sym: '❤️', name: 'Amor' },
+  { symbol: '🧠', label: 'Lógica', id: 'logica' },
+  { symbol: '🎨', label: 'Caos', id: 'caos' },
+  { symbol: '⚖️', label: 'Equilíbrio', id: 'equilibrio' },
+  { symbol: '🔥', label: 'Vontade', id: 'vontade' },
+  { symbol: '🌀', label: 'Vazio', id: 'vazio' },
+  { symbol: '🌿', label: 'Vida', id: 'vida' }
 ];
 
 const getYoutubeId = (url: string) => {
@@ -396,8 +404,6 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const [zenMode, setZenMode] = useState(false);
   const [hexFailing, setHexFailing] = useState(false);
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
-  const [showRealStories, setShowRealStories] = useState(false);
-  const [isHoveringToggle, setIsHoveringToggle] = useState(false);
   const [activeTagPicker, setActiveTagPicker] = useState<string | null>(null);
   const [observingManifest, setObservingManifest] = useState<any>(null);
   const [spiritualNotice, setSpiritualNotice] = useState<string | null>(null);
@@ -411,6 +417,14 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [ritualStep, setRitualStep] = useState(0);
   const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set());
+  const [targetProfileId, setTargetProfileId] = useState<string | null>(null);
+  const [showPresence, setShowPresence] = useState(false);
+  const [hexagramActive, setHexagramActive] = useState(false);
+  const [trianglesActive, setTrianglesActive] = useState(false);
+  const [hexBlinkActive, setHexBlinkActive] = useState(false);
+  const [showAuraSelector, setShowAuraSelector] = useState(false);
+  const [lucemonMessage, setLucemonMessage] = useState<string | null>(null);
+  const [activeBot, setActiveBot] = useState<any>(null);
 
   const mediaInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
@@ -672,31 +686,56 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
   const fetchComments = async (nodeIds: string[]) => {
     if (!nodeIds.length) return;
-    const { data } = await supabase
-      .from('node_comments')
-      .select('*, profiles(username)')
-      .in('node_id', nodeIds)
-      .order('created_at', { ascending: true });
+    const { data, error } = await supabase
+      .from('consciousness_nodes')
+      .select('*, profiles(username, avatar_url)')
+      .eq('type', 'perceber')
+      .in('metadata->>reply_to', nodeIds);
     
-    if (data) {
+    if (!error && data) {
       const grouped: Record<string, any[]> = {};
-      data.forEach(c => {
-        if (!grouped[c.node_id]) grouped[c.node_id] = [];
-        grouped[c.node_id].push(c);
+      data.forEach((c: any) => {
+        const replyTo = c.metadata?.reply_to;
+        if (replyTo) {
+          if (!grouped[replyTo]) grouped[replyTo] = [];
+          grouped[replyTo].push(c);
+        }
       });
       setPostComments(prev => ({ ...prev, ...grouped }));
     }
   };
 
   const handleSendReply = async (nodeId: string) => {
-    const text = commentDraft[nodeId];
+    const text = commentDraft[nodeId]?.trim();
     if (!text || !currentUser) return;
-    const { error } = await supabase
-      .from('node_comments')
-      .insert([{ node_id: nodeId, user_id: currentUser.id, content: text }]);
-    if (!error) {
-      setCommentDraft(prev => ({ ...prev, [nodeId]: '' }));
-      fetchComments([nodeId]);
+    
+    try {
+      const { data, error } = await supabase
+        .from('consciousness_nodes')
+        .insert([{ 
+          content: text, 
+          user_id: currentUser.id, 
+          type: 'perceber',
+          metadata: { 
+            reply_to: nodeId,
+            aura: 'var(--aura-perceive)',
+            timestamp: new Date().toISOString()
+          }
+        }])
+        .select('*, profiles(username, avatar_url)')
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setCommentDraft(prev => ({ ...prev, [nodeId]: '' }));
+        setPostComments(prev => ({ 
+          ...prev, 
+          [nodeId]: [...(prev[nodeId] || []), data] 
+        }));
+      }
+    } catch (err) {
+      console.error("Erro ao enviar percepção:", err);
     }
   };
 
@@ -864,12 +903,13 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       // 🙏 SERVIR → reagir e abrir perfil
       case 'servir': {
         if (manifest.id) handleToggleSentiment(manifest.id, 'servir');
-        if (manifest.user_id && manifest.user_id !== userId) {
-          router.push(`/profile/${manifest.user_id}`);
+        if (manifest.user_id) {
+          setTargetProfileId(manifest.user_id);
+          setShowPresence(true);
         }
         break;
       }
-      // 🌕 OBSERVAR → Relatório Vibracional Flutuante / Zen Mode
+      // 🌕 OBSERVAR → Relatório Vibracional Flutuante
       case 'observar': {
         if (observingManifest?.id === manifest.id) {
           setObservingManifest(null);
@@ -905,7 +945,12 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       }
       // 🌌 TRANSCENDER → Ritual de Geometria Sagrada
       case 'transcender': {
+        setHexagramActive(prev => !prev);
         setTranscendActive(prev => !prev);
+        const tags = postTags[manifest.id] || manifest.metadata?.tags || [];
+        if (tags.length > 0) {
+          setTagFilter(prev => prev === tags[0] ? null : tags[0]);
+        }
         break;
       }
     }
@@ -7443,141 +7488,151 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             <StoryBar userId={userId} />
           </div>
 
-          {isOwnProfile && (
-            <div className={`${styles.chatBar} glass`}>
-              <div className={styles.chatActionGrid}>
-                {ACTIONS.map((action) => (
-                  <button
-                    key={action.id}
-                    onClick={() => setChatAction(action)}
-                    className={`${styles.actionBtn} ${chatAction.id === action.id ? styles.active : ''}`}
-                    style={{ borderColor: chatAction.id === action.id ? action.aura : 'transparent' }}
-                  >
-                    <action.icon size={14} style={{ color: action.aura }} />
-                    <span>{action.name}</span>
-                  </button>
-                ))}
-              </div>
-
-              <div className={styles.chatInputArea}>
-                <div className={styles.chatAttachedRow}>
-                  {attachedFiles.image && (
-                    <div className={styles.attachedFile}>
-                      <ImageIcon size={14} /> <span>Foto</span>
-                      <button onClick={() => setAttachedFiles(h => ({ ...h, image: null }))}><X size={12} /></button>
-                    </div>
-                  )}
-                  {attachedFiles.audio && (
-                    <div className={styles.attachedFile}>
-                      <Music size={14} /> <span>Áudio</span>
-                      <button onClick={() => setAttachedFiles(h => ({ ...h, audio: null }))}><X size={12} /></button>
-                    </div>
-                  )}
-                </div>
-
-                <AnimatePresence>
-                  {repostTarget && (
-                    <motion.div
-                      className={styles.repostPreviewInChat}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                    >
-                      <div className={styles.repostPreviewHeader}>
-                        <span>🚀 Expressando: @{repostTarget.author}</span>
-                        <button onClick={() => setRepostTarget(null)}><X size={14} /></button>
-                      </div>
-                      <div className={styles.repostPreviewBody}>
-                        {repostTarget.image && <img src={repostTarget.image} className={styles.repostPreviewThumb} />}
-                        <p>{repostTarget.content?.slice(0, 80)}...</p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <form className={styles.chatInputRow} onSubmit={handleSendChatMessage}>
-                  <div className={styles.chatActionButtons}>
-                    <button type="button" onClick={() => mediaInputRef.current?.click()} className={styles.mediaTinyBtn} title="Anexar Foto">
-                      <ImageIcon size={16} />
-                    </button>
-                    <button type="button" onClick={() => audioInputRef.current?.click()} className={styles.mediaTinyBtn} title="Anexar Áudio">
-                      <Music size={16} />
-                    </button>
-
-                    <input type="file" ref={mediaInputRef} hidden accept="image/*" onChange={e => setAttachedFiles(h => ({ ...h, image: e.target.files?.[0] || null }))} />
-                    <input type="file" ref={audioInputRef} hidden accept="audio/*" onChange={e => setAttachedFiles(h => ({ ...h, audio: e.target.files?.[0] || null }))} />
-                  </div>
-
-                  <div className={styles.chatInputWrapper}>
-                    <MessageCircle size={16} className={styles.chatIcon} />
-                    <input
-                      type="text"
-                      placeholder={`Ressoar como ${chatAction.name}...`}
-                      value={chatMessage}
-                      onChange={(e) => setChatMessage(e.target.value)}
-                      className={styles.chatInput}
-                      disabled={isSending}
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className={styles.chatSendBtn}
-                    disabled={(!chatMessage.trim() && !attachedFiles.image && !attachedFiles.audio) || isSending}
-                    style={{ color: chatAction.aura }}
-                  >
-                    <Send size={18} />
-                  </button>
-                </form>
-              </div>
-            </div>
-          )}
 
           <div className={styles.floatingFluxoWrapper}>
             <div className={styles.floatingFluxo}>
-              <div className={styles.feedHeader}>
-                {/* Left stories */}
-                <div className={styles.sideStories}>
-                  <AnimatePresence mode="wait">
-                    {!showRealStories ? (
-                      <motion.div key="bots-left" className={styles.sideStoriesInner} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                        {[
-                          { id: '00000000-0000-0000-0000-000000000001', username: 'Ilusionmon', image: '/personagens/IlusiomonsT.png' },
-                          { id: '00000000-0000-0000-0000-000000000002', username: 'Lucemon', image: '/personagens/LucemonF.png' },
-                          { id: '00000000-0000-0000-0000-000000000003', username: 'Barbamon', image: '/personagens/BarbamonT.png' },
-                          { id: '00000000-0000-0000-0000-000000000004', username: 'Leviamon', image: '/personagens/LeviamonT.png' },
-                        ].map((s, i) => (
-                          <div key={i} className={styles.sideStoryItem} onClick={() => router.push(`/profile/${s.id}`)}>
-                            <div className={styles.sideStoryRing}>
-                              <div className={styles.sideStoryAvatar}>
-                                {s.image ? (<img src={s.image} alt={s.username} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />) : s.username[0]}
-                              </div>
-                            </div>
-                            <span className={styles.sideStoryName}>{s.username}</span>
-                          </div>
-                        ))}
-                      </motion.div>
-                    ) : (
-                      <motion.div key="real-left" className={styles.sideStoriesInner} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                        {recentUsers.slice(0, 4).map((s, i) => (
-                          <div key={s.id || i} className={styles.sideStoryItem} onClick={() => router.push(`/profile/${s.id}`)}>
-                            <div className={styles.sideStoryRing}>
-                              <div className={`${styles.sideStoryAvatar} ${styles.realStoryAvatar}`}>
-                                {s.avatar_url ? (
-                                  <img src={s.avatar_url} alt={s.username} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-                                ) : (s.username?.[0] || '?')}
-                              </div>
-                            </div>
-                            <span className={styles.sideStoryName}>{s.username || 'Manifestação'}</span>
-                          </div>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Center — title + sparks + pulse + toggle */}
+                {/* Center — title + sparks + pulse */}
                 <div className={styles.feedHeaderCenter}>
-                  <div className={styles.fluxoTitleWrap}>
+                  {isOwnProfile && (
+                    <div className={styles.chatBarInHeader}>
+                      <div className={styles.chatInputArea}>
+                        <div className={styles.chatAttachedRow}>
+                          {attachedFiles.image && (
+                            <div className={styles.attachedFile}>
+                              <ImageIcon size={14} /> <span>Foto</span>
+                              <button onClick={() => setAttachedFiles(h => ({ ...h, image: null }))}><X size={12} /></button>
+                            </div>
+                          )}
+                          {attachedFiles.audio && (
+                            <div className={styles.attachedFile}>
+                              <Music size={14} /> <span>Áudio</span>
+                              <button onClick={() => setAttachedFiles(h => ({ ...h, audio: null }))}><X size={12} /></button>
+                            </div>
+                          )}
+                        </div>
+
+                        <AnimatePresence>
+                          {repostTarget && (
+                            <motion.div
+                              className={styles.repostPreviewInChat}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: 10 }}
+                            >
+                              <div className={styles.repostPreviewHeader}>
+                                <span>🚀 Expressando: @{repostTarget.author}</span>
+                                <button onClick={() => setRepostTarget(null)}><X size={14} /></button>
+                              </div>
+                              <div className={styles.repostPreviewBody}>
+                                {repostTarget.image && <img src={repostTarget.image} className={styles.repostPreviewThumb} />}
+                                <p>{repostTarget.content?.slice(0, 80)}...</p>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
+                        <form 
+                          className={`${styles.chatInputRow} ${styles.chatInputRowInHeader}`} 
+                          onSubmit={handleSendChatMessage}
+                          style={{ 
+                            borderColor: `${chatAction.aura}66`, 
+                            boxShadow: `0 0 20px ${chatAction.aura}22`,
+                            transition: 'all 0.5s ease',
+                            marginBottom: '2.5rem'
+                          }}
+                        >
+                          <div className={styles.chatActionButtons}>
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                              <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Vibrar em:</span>
+                              <button 
+                                type="button" 
+                                className={styles.auraSelectorTrigger}
+                                onClick={() => setShowAuraSelector(!showAuraSelector)}
+                                style={{ 
+                                  color: chatAction.aura,
+                                  boxShadow: `0 0 10px ${chatAction.aura}66, inset 0 0 5px ${chatAction.aura}33`
+                                }}
+                              >
+                                <chatAction.icon size={12} />
+                                <span>{chatAction.name}</span>
+                              </button>
+                              
+                              <AnimatePresence>
+                                {showAuraSelector && (
+                                  <motion.div 
+                                    className={styles.auraSelectorMenu}
+                                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                    style={{ left: '50%', transform: 'translateX(-50%)' }}
+                                  >
+                                    <AnimatePresence mode="wait">
+                                      <motion.div 
+                                        key={chatAction.id === 'buscar' || SEARCH_ACTIONS.some(sa => sa.id === chatAction.id) ? 'search' : 'default'}
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 10 }}
+                                        className={styles.auraSelectorGrid}
+                                      >
+                                        {(chatAction.id === 'buscar' || SEARCH_ACTIONS.some(sa => sa.id === chatAction.id) ? SEARCH_ACTIONS : ACTIONS.filter(a => a.id !== 'perceber' && a.id !== 'observar')).map((action) => (
+                                          <button
+                                            key={action.id}
+                                            type="button"
+                                            className={`${styles.auraOption} ${chatAction.id === action.id ? styles.auraOptionActive : ''}`}
+                                            onClick={() => {
+                                              setChatAction(action);
+                                              setShowAuraSelector(false);
+                                            }}
+                                            style={chatAction.id === action.id ? { color: action.aura } : {}}
+                                            title={action.name}
+                                          >
+                                            <action.icon size={20} />
+                                          </button>
+                                        ))}
+                                      </motion.div>
+                                    </AnimatePresence>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+
+                            <div className={styles.divider} />
+
+                            <button type="button" onClick={() => mediaInputRef.current?.click()} className={styles.mediaTinyBtn} title="Anexar Foto">
+                              <ImageIcon size={16} />
+                            </button>
+                            <button type="button" onClick={() => audioInputRef.current?.click()} className={styles.mediaTinyBtn} title="Anexar Áudio">
+                              <Music size={16} />
+                            </button>
+
+                            <input type="file" ref={mediaInputRef} hidden accept="image/*" onChange={e => setAttachedFiles(h => ({ ...h, image: e.target.files?.[0] || null }))} />
+                            <input type="file" ref={audioInputRef} hidden accept="audio/*" onChange={e => setAttachedFiles(h => ({ ...h, audio: e.target.files?.[0] || null }))} />
+                          </div>
+
+                          <div className={styles.chatInputWrapper}>
+                            <MessageCircle size={16} className={styles.chatIcon} />
+                            <input
+                              type="text"
+                              placeholder="Seu fluxo vai para a Nascente Universal..."
+                              value={chatMessage}
+                              onChange={(e) => setChatMessage(e.target.value)}
+                              className={styles.chatInput}
+                              disabled={isSending}
+                            />
+                          </div>
+                          <button
+                            type="submit"
+                            className={styles.chatSendBtn}
+                            disabled={(!chatMessage.trim() && !attachedFiles.image && !attachedFiles.audio) || isSending}
+                            style={{ color: chatAction.aura }}
+                          >
+                            <Send size={18} />
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  )}
+                  <div className={`${styles.fluxoTitleWrap} ${styles.upwardShift}`}>
                     {Array.from({ length: 12 }).map((_, i) => {
                       const color = SPARK_COLORS[i];
                       const isBlack = color === null;
@@ -7608,76 +7663,14 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       Fluxo de Consciência
                     </h2>
                   </div>
-                  <div className={styles.pulseRow}>
+                  <div className={`${styles.pulseRow} ${styles.upwardShift} ${styles.pulseShiftDown}`}>
                     <RealtimePulse 
                       channelName={`profile-${userId}`} 
                       label={profile.status || "Sincronizado"}
                       streak={profile.status_updated_at ? Math.floor((new Date().getTime() - new Date(profile.status_updated_at).getTime()) / (1000 * 60 * 60 * 24)) : 0}
                     />
                   </div>
-
-                  <button 
-                    className={styles.storyToggleBtn} 
-                    onClick={() => setShowRealStories(!showRealStories)}
-                    onMouseEnter={() => setIsHoveringToggle(true)}
-                    onMouseLeave={() => setIsHoveringToggle(false)}
-                    title={showRealStories ? 'Ver Realidade' : 'Ver Espiritualidade'}
-                  >
-                    <span 
-                      className={isHoveringToggle ? styles.glitchText : ''}
-                      data-text={isHoveringToggle 
-                        ? (showRealStories ? 'Espiritualidade' : 'Realidade') 
-                        : (showRealStories ? 'Realidade' : 'Espiritualidade')
-                      }
-                    >
-                      {isHoveringToggle 
-                        ? (showRealStories ? 'Espiritualidade' : 'Realidade') 
-                        : (showRealStories ? 'Realidade' : 'Espiritualidade')
-                      }
-                    </span>
-                  </button>
                 </div>
-
-                {/* Right stories */}
-                <div className={styles.sideStories}>
-                  <AnimatePresence mode="wait">
-                    {!showRealStories ? (
-                      <motion.div key="bots-right" className={styles.sideStoriesInner} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                        {[
-                          { id: '00000000-0000-0000-0000-000000000005', username: 'Beelzemon', image: '/personagens/BeelzemonT.png' },
-                          { id: '00000000-0000-0000-0000-000000000007', username: 'Belphemon', image: '/personagens/BelphemonT.png' },
-                          { id: '00000000-0000-0000-0000-000000000006', username: 'Lilithmon', image: '/personagens/LilithmonT.png' },
-                          { id: '00000000-0000-0000-0000-000000000008', username: 'Daemon', image: '/personagens/DaemonT.png' },
-                        ].map((s, i) => (
-                          <div key={i} className={styles.sideStoryItem} onClick={() => router.push(`/profile/${s.id}`)}>
-                            <div className={styles.sideStoryRing}>
-                              <div className={styles.sideStoryAvatar}>
-                                {s.image ? (<img src={s.image} alt={s.username} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />) : s.username[0]}
-                              </div>
-                            </div>
-                            <span className={styles.sideStoryName}>{s.username}</span>
-                          </div>
-                        ))}
-                      </motion.div>
-                    ) : (
-                      <motion.div key="real-right" className={styles.sideStoriesInner} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                        {recentUsers.slice(4, 8).map((s, i) => (
-                          <div key={s.id || i} className={styles.sideStoryItem} onClick={() => router.push(`/profile/${s.id}`)}>
-                            <div className={styles.sideStoryRing}>
-                              <div className={`${styles.sideStoryAvatar} ${styles.realStoryAvatar}`}>
-                                {s.avatar_url ? (
-                                  <img src={s.avatar_url} alt={s.username} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-                                ) : (s.username?.[0] || '?')}
-                              </div>
-                            </div>
-                            <span className={styles.sideStoryName}>{s.username || 'Manifestação'}</span>
-                          </div>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
 
           <div className={`${styles.feed} ${zenMode ? styles.zenFeed : ''}`}>
             <AnimatePresence>
@@ -7866,13 +7859,16 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   <div className={styles.miniNexusFooter}>
                     {ACTIONS.map(action => {
                       const ActionIcon = action.icon;
-                      let isActive = false;
-                      if (action.id === 'buscar') isActive = activeTagPicker === manifest.id;
-                      if (action.id === 'integrar') isActive = followedUsers.has(manifest.user_id);
-                      if (action.id === 'perceber') isActive = activeRevealedPost === manifest.id;
-                      if (action.id === 'sentir') isActive = activeSentimentPicker === manifest.id;
-                      if (action.id === 'cuidar') isActive = activeCuidarPicker === manifest.id;
-                      if (action.id === 'observar') isActive = observingManifest?.id === manifest.id;
+                      const isActive = (
+                        (action.id === 'buscar' && activeTagPicker === manifest.id) ||
+                        (action.id === 'integrar' && followedUsers.has(manifest.user_id)) ||
+                        (action.id === 'perceber' && activeRevealedPost === manifest.id) ||
+                        (action.id === 'sentir' && activeSentimentPicker === manifest.id) ||
+                        (action.id === 'cuidar' && activeCuidarPicker === manifest.id) ||
+                        (action.id === 'observar' && observingManifest?.id === manifest.id)
+                      );
+                      
+                      const isActiveReportOpen = action.id === 'observar' && observingManifest?.id === manifest.id;
                       return (
                         <div key={`action-wrap-${manifest.id}-${action.id}`} className={styles.actionWrapper}>
                           <button
@@ -7884,9 +7880,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                             <ActionIcon size={13} />
                           </button>
 
-                          {/* Local Vibrational Report (Floating above button) */}
                           <AnimatePresence>
-                            {action.id === 'observar' && observingManifest?.id === manifest.id && (
+                            {isActiveReportOpen && (
                               <motion.div
                                 key={`local-report-${manifest.id}`}
                                 className={styles.floatingVibrationalReportLocal}
@@ -7898,7 +7893,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                 <button className={styles.closeReportBtn} onClick={() => setObservingManifest(null)} style={{ top: '0.5rem', right: '0.5rem' }}>
                                   <X size={14} />
                                 </button>
-                                <div className={styles.reportHeader} style={{ fontSize: '0.65rem', marginBottom: '0.2rem' }}>Relatório Vibracional</div>
+                                <div className={styles.reportHeader}>Relatório Vibracional</div>
                                 
                                 <div className={styles.reportRow}>
                                   {(() => {
@@ -7915,7 +7910,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                          t === 'conectar' ? '🔗' : 
                                          t === 'integrar' ? '⚛️' : 
                                          t === 'expressar' ? '📣' : 
-                                         (t.startsWith('sentir:') ? (FEELING_SYMBOLS.find(f => `sentir:${f.id.toLowerCase()}` === t)?.sym || '🧠') : 
+                                         (t.startsWith('sentir:') ? (FEELING_SYMBOLS.find(f => `sentir:${f.id.toLowerCase()}` === t)?.symbol || '🧠') : 
                                            (t.startsWith('tag:') ? '🏷️' : t)),
                                       c: dbs[t].count,
                                       u: dbs[t].userReacted
@@ -7954,74 +7949,71 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                 </div>
                               </motion.div>
                             )}
+
+                            {/* SENTIR Picker (Anchored to button) */}
+                            {action.id === 'sentir' && activeSentimentPicker === manifest.id && (
+                              <motion.div 
+                                key={`feel-picker-${manifest.id}`}
+                                className={styles.sentimentPickerOverlay}
+                                initial={{ opacity: 0, scale: 0.9, y: 10, x: '-50%' }}
+                                animate={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
+                                exit={{ opacity: 0, scale: 0.9, y: 10, x: '-50%' }}
+                              >
+                                <div className={styles.sentimentPickerHeader}>Sintonize seu Sentir</div>
+                                <div className={styles.horizontalPickerScroll}>
+                                  {FEELING_SYMBOLS.map(f => (
+                                    <div 
+                                      key={`feel-${manifest.id}-${f.label}`} 
+                                      className={styles.sentimentOption}
+                                      onClick={() => {
+                                        handleToggleSentiment(manifest.id, `sentir:${f.id.toLowerCase()}`);
+                                        setActiveSentimentPicker(null);
+                                      }}
+                                    >
+                                      <span style={{ fontSize: '1.2rem' }}>{f.symbol}</span>
+                                      <span style={{ fontSize: '0.6rem', opacity: 0.7, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+
+                            {/* CUIDAR (EMANAR) Picker (Anchored to button) */}
+                            {action.id === 'cuidar' && activeCuidarPicker === manifest.id && (
+                              <motion.div
+                                key={`care-picker-${manifest.id}`}
+                                className={styles.sentimentPickerOverlay}
+                                initial={{ opacity: 0, scale: 0.9, y: 10, x: '-50%' }}
+                                animate={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
+                                exit={{ opacity: 0, scale: 0.9, y: 10, x: '-50%' }}
+                              >
+                                <div className={styles.sentimentPickerHeader}>Escolha sua Vibração de Cuidado</div>
+                                <div className={styles.horizontalPickerScroll}>
+                                  {CARE_EMOJIS.map(({ emoji, label }) => (
+                                    <div
+                                      key={`care-${manifest.id}-${emoji}`}
+                                      className={styles.sentimentOption}
+                                      title={label}
+                                      onClick={async () => {
+                                        setActiveCuidarPicker(null);
+                                        if (currentUser) {
+                                          handleToggleSentiment(manifest.id, emoji);
+                                        }
+                                      }}
+                                    >
+                                      <span style={{ fontSize: '1.2rem' }}>{emoji}</span>
+                                      <span style={{ fontSize: '0.6rem', opacity: 0.7, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
                           </AnimatePresence>
                         </div>
                       );
                     })}
                   </div>
 
-                  {/* Emoji Care Picker (CUIDAR) */}
-                  <AnimatePresence>
-                    {activeCuidarPicker === manifest.id && (
-                      <motion.div
-                        className={styles.sentimentPickerOverlay}
-                        style={{ position: 'relative', bottom: 'auto', marginTop: '0.5rem' }}
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                      >
-                        <div className={styles.sentimentPickerHeader}>Escolha sua Vibração de Cuidado</div>
-                        <div className={styles.horizontalPickerScroll}>
-                          {CARE_EMOJIS.map(({ emoji, label }) => (
-                            <div
-                              key={`care-${manifest.id}-${emoji}`}
-                              className={styles.sentimentOption}
-                              title={label}
-                              onClick={async () => {
-                                setActiveCuidarPicker(null);
-                                if (currentUser) {
-                                  handleToggleSentiment(manifest.id, emoji);
-                                }
-                              }}
-                            >
-                              <span style={{ fontSize: '1.2rem' }}>{emoji}</span>
-                              <span style={{ fontSize: '0.6rem', opacity: 0.75, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Virtue Sentiment Picker (SENTIR) */}
-                  <AnimatePresence>
-                    {activeSentimentPicker === manifest.id && (
-                      <motion.div 
-                        className={styles.sentimentPickerOverlay}
-                        style={{ position: 'relative', bottom: 'auto', marginTop: '0.5rem' }}
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                      >
-                        <div className={styles.sentimentPickerHeader}>Sintonize seu Sentir</div>
-                        <div className={styles.sentimentSymbolsGrid}>
-                          {FEELING_SYMBOLS.map(f => (
-                            <div 
-                              key={`feel-${manifest.id}-${f.id}`} 
-                              className={styles.sentimentOption}
-                              onClick={() => {
-                                handleToggleSentiment(manifest.id, `sentir:${f.id.toLowerCase()}`);
-                                setActiveSentimentPicker(null);
-                              }}
-                            >
-                              <span style={{ fontSize: '1.2rem' }}>{f.sym}</span>
-                              <span style={{ fontSize: '0.65rem', opacity: 0.8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.name}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
 
                   {/* Repost Display */}
                   <AnimatePresence>
@@ -8106,6 +8098,135 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         profile={profile}
         onOpenSettings={() => setIsEditingProfile(true)}
       />
+
+      <AnimatePresence mode="wait">
+        {showPresence && (
+          <UserPresence 
+            key="presence-modal"
+            manifestations={manifestations} 
+            selectedColor={profile?.nexo_color || undefined}
+            targetId={targetProfileId || undefined}
+            onClose={() => {
+              setShowPresence(false);
+              setTargetProfileId(null);
+            }} 
+            onOpenSettings={() => {
+              setShowPresence(false);
+              setIsEditingProfile(true);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* --- UNIFIED NEON TRIANGLES SYSTEM --- */}
+      <AnimatePresence>
+        {(trianglesActive || hexagramActive) && (
+          <div className={`${styles.unifiedTriangleOverlay} ${hexBlinkActive ? styles.hexagramBlinkActive : ''} ${hexFailing ? styles.hexFailing : ''}`}>
+            {/* Hexagram White Laser Star */}
+            <AnimatePresence>
+              {hexagramActive && (
+                <motion.div 
+                  className={`${styles.whiteLaserStar} ${hexBlinkActive ? styles.hexagramBlinkActive : ''} ${hexFailing ? styles.hexFailing : ''}`}
+                  initial={{ opacity: 0, scale: 0.5, rotate: -30 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 1.5, rotate: 30 }}
+                  transition={{ duration: 1.5, ease: "circOut" }}
+                  style={{ width: '100vw', height: '100vh' }}
+                >
+                  <svg viewBox="0 0 1000 1000" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+                    {(() => {
+                      const R = (typeof window !== 'undefined' ? (window.innerHeight / 2) - 55 : 400);
+                      const center = 500;
+                      const scale = 500 / (typeof window !== 'undefined' ? (window.innerHeight / 2) : 500);
+                      const svgR = R * scale;
+                      const p1 = { x: center, y: center - svgR };
+                      const p2 = { x: center + svgR * 0.866, y: center - svgR * 0.5 };
+                      const p3 = { x: center + svgR * 0.866, y: center + svgR * 0.5 };
+                      const p4 = { x: center, y: center + svgR };
+                      const p5 = { x: center - svgR * 0.866, y: center + svgR * 0.5 };
+                      const p6 = { x: center - svgR * 0.866, y: center - svgR * 0.5 };
+                      return (
+                        <g style={{ filter: 'drop-shadow(0 0 12px white) drop-shadow(0 0 25px rgba(255,255,255,0.4))' }}>
+                          <path d={`M${p1.x},${p1.y} L${p3.x},${p3.y} L${p5.x},${p5.y} Z`} fill="none" stroke="white" strokeWidth="2" />
+                          <path d={`M${p2.x},${p2.y} L${p4.x},${p4.y} L${p6.x},${p6.y} Z`} fill="none" stroke="white" strokeWidth="2" />
+                        </g>
+                      );
+                    })()}
+                  </svg>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {[0, 1, 2, 3, 4, 5].map((i) => {
+              const hexAngles = [0, 60, 120, 180, 240, 300];
+              const hexAngle = hexAngles[i];
+              const isHex = hexagramActive;
+              const edgeDistY = (typeof window !== 'undefined' ? (window.innerHeight / 2) - 55 : 400);
+              let targetX = 0; let targetY = 0; let targetRotate = 0; let scale = 1;
+              if (isHex) {
+                targetX = Math.sin(hexAngle * Math.PI / 180) * edgeDistY;
+                targetY = -Math.cos(hexAngle * Math.PI / 180) * edgeDistY;
+                targetRotate = hexAngle;
+                scale = (i === 0 || i === 3) ? 1.1 : 0.9;
+              }
+              return (
+                <motion.div
+                  key={`unified-tri-${i}`}
+                  className={styles.dynamicTriangle}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: scale, x: targetX, y: targetY, rotate: targetRotate }}
+                  exit={{ opacity: 0, scale: 0 }}
+                  transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: isHex ? i * 0.08 : 0 }}
+                >
+                  <svg viewBox="0 0 100 100" width="100" height="100">
+                    <polygon points="50,10 10,90 90,90" fill="rgba(0, 0, 0, 0.75)" stroke="white" strokeWidth="2.5" style={{ filter: 'drop-shadow(0 0 5px white)' }} />
+                    {(!isHex || i === 0 || i === 3) && (
+                      <circle cx="50" cy="63" r="4" fill="white" className={styles.sparkleLight} />
+                    )}
+                  </svg>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {activeIntegrationSplash && (
+          <motion.div 
+            key="integration-splash"
+            className={styles.integrationOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveIntegrationSplash(null)}
+          >
+            <motion.div 
+              className={styles.integrationSplash}
+              initial={{ scale: 0.8, y: 30 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ type: "spring", damping: 15 }}
+            >
+              <div className={styles.splashGlow} />
+              <div className={styles.splashContent}>
+                <div className={styles.splashAvatarBox}>
+                  <img className={styles.splashAvatar} src={activeIntegrationSplash.avatar} alt={activeIntegrationSplash.name} />
+                  <div className={styles.avatarRing} />
+                </div>
+                <h2 className={styles.splashTitle}>Mundos Integrados</h2>
+                <p className={styles.splashText}>Você sintonizou com a frequência de <strong>{activeIntegrationSplash.name}</strong></p>
+                <div className={styles.revelationBox}>
+                  <p className={styles.revelationText}>“{activeIntegrationSplash.phrase}”</p>
+                </div>
+                <div className={styles.splashFooter}>Zero Day Signal</div>
+              </div>
+              <button className={styles.closeSplashBtn} onClick={() => setActiveIntegrationSplash(null)}>
+                <X size={24} />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {isEditingProfile && (
