@@ -2901,6 +2901,10 @@
   min-height: 1100px;
 }
 
+.guestView .floatingFluxo {
+  padding-top: 6vh;
+}
+
 .floatingFluxoWrapper::after {
   content: '';
   position: absolute;
