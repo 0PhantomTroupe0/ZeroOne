@@ -1,4 +1,4 @@
-.container {
+﻿.container {
   min-height: 100vh;
   background: var(--bg-primary, #020202);
   color: #fff;
@@ -742,7 +742,7 @@
 
 .colorGridExpanded {
   position: absolute;
-  top: calc(100% + 14px); /* Espaço maior para aparecer logo abaixo */
+  top: calc(100% + 14px); /* EspaÃ§o maior para aparecer logo abaixo */
   left: 50%;
   transform: translateX(-50%);
   background: #050505;
@@ -1120,7 +1120,7 @@
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.95rem;
   line-height: 1.5;
-  max-width: 450px; /* Reduzido levemente para caber botões */
+  max-width: 450px; /* Reduzido levemente para caber botÃµes */
   font-style: italic;
   text-align: center;
   animation: whiteGlitchBurst 8.5s infinite;
@@ -1246,7 +1246,7 @@
   margin-top: 0.2rem;
   width: 240px;
   height: 200px;
-  background: #fff; /* Borda branca para o triângulo */
+  background: #fff; /* Borda branca para o triÃ¢ngulo */
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   display: flex;
   align-items: center;
@@ -1859,7 +1859,7 @@
   transform: translateY(-1px);
 }
 
-/* Modal de Confirmação para Soltar */
+/* Modal de ConfirmaÃ§Ã£o para Soltar */
 .confirmOverlay {
   position: fixed;
   inset: 0;
@@ -2692,7 +2692,251 @@
   align-items: center;
   justify-content: center;
 }
-/* === ESTADOS DE CONSCIÊNCIA (Nascente Universal Sync) === */
+/* === ESTADOS DE CONSCIÃŠNCIA (Nascente Universal Sync) === */
+
+.floatingFluxoWrapper {
+  position: relative; /* Diferente da home que Ã© fixed, no perfil Ã© parte do layout */
+  width: 100%;
+  max-width: 1350px;
+  margin: 2rem auto;
+  min-height: 800px;
+  border-radius: 34px;
+  z-index: 10;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--silver-angle, 0deg) at 50% 50%,
+    #0d0d0d  0deg,
+    #3c3c3c  20deg,
+    #8c8c8c  45deg,
+    #c4c4c4  70deg,
+    #ebebeb  90deg,
+    #ffffff 110deg,
+    #e8e8e8 130deg,
+    #b8b8b8 155deg,
+    #717171 180deg,
+    #3e3e3e 205deg,
+    #1a1a1a 225deg,
+    #3e3e3e 250deg,
+    #717171 270deg,
+    #b8b8b8 290deg,
+    #e0e0e0 310deg,
+    #f8f8f8 330deg,
+    #d8d8d8 350deg,
+    #0d0d0d 360deg
+  );
+  animation: brushedSilverSpin 14s linear infinite;
+}
+
+.floatingFluxoWrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 34px;
+  background: inherit;
+  filter: blur(6px);
+  opacity: 0.25;
+  z-index: -1;
+}
+
+@keyframes brushedSilverSpin {
+  from { --silver-angle: 0deg; }
+  to   { --silver-angle: 360deg; }
+}
+
+@property --silver-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.floatingFluxo {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 32px; /* Ligeiramente menor que o wrapper */
+  display: flex;
+  flex-direction: column;
+  z-index: 11;
+  background: rgba(14, 14, 16, 0.94) !important;
+  backdrop-filter: blur(40px);
+  overflow: hidden;
+  transition: box-shadow 1s cubic-bezier(0.4, 0.0, 0.2, 1);
+  border: none;
+}
+
+.floatingFluxo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)) top center / calc(100% - 120px) 2px,
+    linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)) bottom center / calc(100% - 120px) 2px,
+    linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)) left center / 2px calc(100% - 120px),
+    linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)) right center / 2px calc(100% - 120px);
+  background-repeat: no-repeat;
+  z-index: 900;
+}
+
+.feedHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.feedHeaderCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.sideStories {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+
+.sideStoriesInner {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+
+.sideStoryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.sideStoryItem:hover {
+  transform: translateY(-3px) scale(1.05);
+}
+
+.sideStoryRing {
+  position: relative;
+  width: 77px;
+  height: 77px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(192, 192, 192, 0.4);
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: storyPulse 4s ease-in-out infinite;
+  background: transparent;
+}
+
+.sideStoryRing::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(192, 192, 192, 0.15);
+  background: radial-gradient(circle at 50% 0%, #fff 2.5px, transparent 3.5px);
+  animation: storyOrbit 6s linear infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.sideStoryRing::after {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 1px solid rgba(192, 192, 192, 0.1);
+  background: radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.6) 2px, transparent 3px);
+  animation: storyOrbitReverse 8s linear infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes storyOrbit {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes storyOrbitReverse {
+  from { transform: rotate(360deg); }
+  to   { transform: rotate(0deg); }
+}
+
+@keyframes storyPulse {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
+}
+
+.sideStoryAvatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1rem;
+  color: #fff;
+  background: #000 !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.realStoryAvatar {
+  background: #000 !important;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.sideStoryName {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 0.5rem;
+}
+
+.storyToggleBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  margin-top: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.storyToggleBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.glitchText {
+  position: relative;
+  display: inline-block;
+}
+
 
 .fluxoTitleWrap {
   position: relative;

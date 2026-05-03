@@ -9,7 +9,7 @@ import {
   MoreHorizontal, Fingerprint, Activity, Compass, Zap,
   Sun, Anchor, Eye, Wind, Atom, Palette, Sparkles, Trash2,
   Camera, Flame, Settings, RefreshCw, ChevronLeft, ChevronRight, Shield,
-  Ghost, Crown, Gem
+  Ghost, Crown, Gem, Clock, Hash, Check
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import UserPresence from "@/components/UserPresence";
@@ -383,9 +383,10 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const [tagInput, setTagInput] = useState<Record<string, string>>({});
   const [postTags, setPostTags] = useState<Record<string, string[]>>({});
   const [zenMode, setZenMode] = useState(false);
-  const [ritualStep, setRitualStep] = useState(0); // 0: Numbers, 1: Hidden, 2: Elements, 3: Hidden
-
-  const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set());
+  const [hexFailing, setHexFailing] = useState(false);
+  const [recentUsers, setRecentUsers] = useState<any[]>([]);
+  const [showRealStories, setShowRealStories] = useState(false);
+  const [isHoveringToggle, setIsHoveringToggle] = useState(false);
   const [activeTagPicker, setActiveTagPicker] = useState<string | null>(null);
   const [observingManifest, setObservingManifest] = useState<any>(null);
   const [spiritualNotice, setSpiritualNotice] = useState<string | null>(null);
@@ -397,6 +398,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const [hiddenPosts, setHiddenPosts] = useState<Set<string>>(new Set());
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [ritualStep, setRitualStep] = useState(0);
+  const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set());
 
   const mediaInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
@@ -498,12 +501,55 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       if (manifestationsError) throw manifestationsError;
       setManifestations(manifestationsData || []);
 
+      fetchRecentUsers();
+      if (currentUser) fetchFollowedUsers(currentUser.id);
     } catch (err) {
-      console.error("Error loading profile:", err);
+      console.error("Error load profile:", err);
     } finally {
       setLoading(false);
     }
   }
+
+  const fetchFollowedUsers = async (uid: string) => {
+    const { data } = await supabase
+      .from('follows')
+      .select('following_id')
+      .eq('follower_id', uid);
+    if (data) {
+      setFollowedUsers(new Set(data.map(f => f.following_id)));
+    }
+  };
+
+  const fetchRecentUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('consciousness_nodes')
+        .select(`
+          user_id,
+          profiles (
+            id,
+            username,
+            avatar_url
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(40);
+
+      if (error) throw error;
+      
+      const uniqueUsers = new Map();
+      (data as any[])?.forEach(node => {
+        const profile = Array.isArray(node.profiles) ? node.profiles[0] : node.profiles;
+        if (profile && !uniqueUsers.has(profile.id)) {
+          uniqueUsers.set(profile.id, profile);
+        }
+      });
+      
+      setRecentUsers(Array.from(uniqueUsers.values()).slice(0, 8));
+    } catch (err) {
+      console.error("Error fetching recent users:", err);
+    }
+  };
 
   useEffect(() => {
     if (!userId) return;
@@ -768,32 +814,6 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     }
   };
 
-  const handleAddTag = async (postId: string) => {
-    const rawTag = tagInput[postId] || '';
-    const tag = rawTag.trim().toLowerCase().replace(/\s+/g, '-').replace('#', '');
-    if (!tag) return;
-
-    // Usar sistema de sentimentos para tags colaborativas
-    await handleToggleSentiment(postId, `tag:${tag}`);
-
-    setTagInput(prev => ({ ...prev, [postId]: '' }));
-    setShowTagInput(null);
-  };
-
-  const handleSendReply = async (manifestId: string) => {
-    const content = commentDraft[manifestId]?.trim();
-    if (!content || !currentUser) return;
-    const { data } = await supabase.from('consciousness_nodes').insert([{
-      user_id: currentUser.id,
-      content,
-      type: 'perceber',
-      metadata: { reply_to: manifestId, aura: 'var(--aura-perceive)' }
-    }]).select('*, profiles(username, avatar_url)').single();
-    if (data) {
-      setPostComments(prev => ({ ...prev, [manifestId]: [...(prev[manifestId] || []), data] }));
-    }
-    setCommentDraft(prev => ({ ...prev, [manifestId]: '' }));
-  };
 
   const handleSendChatMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -1446,7 +1466,6 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       title: 'Modo Avatar',
                       color: profile.nexo_color,
                       onClick: updateAvatarMode,
-                    },
                     },
                     {
                       id: 'eye_colors',
@@ -7416,50 +7435,152 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             </div>
           )}
 
-          <div className={`${styles.mainFlow} glass`} style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
-            <div className={styles.feedHeader} style={{ padding: '2rem 1rem' }}>
-              <div className={styles.fluxoTitleWrap}>
-                {/* Faíscas ATRÁS da lua, com burst colorido a cada 7s */}
-                {Array.from({ length: 12 }).map((_, i) => {
-                  const color = SPARK_COLORS[i];
-                  const isBlack = color === null;
-                  const activeStyle = sparkActive ? {
-                    filter: isBlack
-                      ? 'drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px #fff)'
-                      : `drop-shadow(0 0 6px ${color}) drop-shadow(0 0 14px ${color})`,
-                    opacity: 1,
-                  } : {};
-                  return (
-                    <div
-                      key={i}
-                      className={styles.sparkRay}
-                      style={{
-                        transform: `rotate(${i * 30}deg)`,
-                        zIndex: 0,
-                        transition: 'filter 1.8s ease-out, opacity 1.8s ease-out',
-                        ...activeStyle,
-                      }}
-                      data-color={isBlack ? '#000000' : (color ?? '#fff')}
-                      data-active={sparkActive ? '1' : '0'}
-                    />
-                  );
-                })}
+          <div className={styles.floatingFluxoWrapper}>
+            <div className={styles.floatingFluxo}>
+              <div className={styles.feedHeader}>
+                {/* Left stories */}
+                <div className={styles.sideStories}>
+                  <AnimatePresence mode="wait">
+                    {!showRealStories ? (
+                      <motion.div key="bots-left" className={styles.sideStoriesInner} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                        {[
+                          { id: '00000000-0000-0000-0000-000000000001', username: 'Ilusionmon', image: '/personagens/IlusiomonsT.png' },
+                          { id: '00000000-0000-0000-0000-000000000002', username: 'Lucemon', image: '/personagens/LucemonF.png' },
+                          { id: '00000000-0000-0000-0000-000000000003', username: 'Barbamon', image: '/personagens/BarbamonT.png' },
+                          { id: '00000000-0000-0000-0000-000000000004', username: 'Leviamon', image: '/personagens/LeviamonT.png' },
+                        ].map((s, i) => (
+                          <div key={i} className={styles.sideStoryItem} onClick={() => router.push(`/profile/${s.id}`)}>
+                            <div className={styles.sideStoryRing}>
+                              <div className={styles.sideStoryAvatar}>
+                                {s.image ? (<img src={s.image} alt={s.username} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />) : s.username[0]}
+                              </div>
+                            </div>
+                            <span className={styles.sideStoryName}>{s.username}</span>
+                          </div>
+                        ))}
+                      </motion.div>
+                    ) : (
+                      <motion.div key="real-left" className={styles.sideStoriesInner} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                        {recentUsers.slice(0, 4).map((s, i) => (
+                          <div key={s.id || i} className={styles.sideStoryItem} onClick={() => router.push(`/profile/${s.id}`)}>
+                            <div className={styles.sideStoryRing}>
+                              <div className={`${styles.sideStoryAvatar} ${styles.realStoryAvatar}`}>
+                                {s.avatar_url ? (
+                                  <img src={s.avatar_url} alt={s.username} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                                ) : (s.username?.[0] || '?')}
+                              </div>
+                            </div>
+                            <span className={styles.sideStoryName}>{s.username || 'Manifestação'}</span>
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
-                {/* Lua transparente — sobre as faíscas, abaixo do título */}
-                <LuaProjetada />
-                <h2 className={styles.fluxoTitle} data-active={sparkActive ? '1' : '0'}>
-                  Fluxo de Consciência
-                </h2>
+                {/* Center — title + sparks + pulse + toggle */}
+                <div className={styles.feedHeaderCenter}>
+                  <div className={styles.fluxoTitleWrap}>
+                    {Array.from({ length: 12 }).map((_, i) => {
+                      const color = SPARK_COLORS[i];
+                      const isBlack = color === null;
+                      const activeStyle = sparkActive ? {
+                        filter: isBlack
+                          ? 'drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px #fff)'
+                          : `drop-shadow(0 0 6px ${color}) drop-shadow(0 0 14px ${color})`,
+                        opacity: 1,
+                      } : {};
+                      return (
+                        <div
+                          key={i}
+                          className={styles.sparkRay}
+                          style={{
+                            transform: `rotate(${i * 30}deg)`,
+                            zIndex: 0,
+                            transition: 'filter 1.8s ease-out, opacity 1.8s ease-out',
+                            ...activeStyle,
+                          }}
+                          data-color={isBlack ? '#000000' : (color ?? '#fff')}
+                          data-active={sparkActive ? '1' : '0'}
+                        />
+                      );
+                    })}
+
+                    <LuaProjetada />
+                    <h2 className={styles.fluxoTitle} data-active={sparkActive ? '1' : '0'}>
+                      Fluxo de Consciência
+                    </h2>
+                  </div>
+                  <div className={styles.pulseRow}>
+                    <RealtimePulse 
+                      channelName={`profile-${userId}`} 
+                      label={profile.status || "Sincronizado"}
+                      streak={profile.status_updated_at ? Math.floor((new Date().getTime() - new Date(profile.status_updated_at).getTime()) / (1000 * 60 * 60 * 24)) : 0}
+                    />
+                  </div>
+
+                  <button 
+                    className={styles.storyToggleBtn} 
+                    onClick={() => setShowRealStories(!showRealStories)}
+                    onMouseEnter={() => setIsHoveringToggle(true)}
+                    onMouseLeave={() => setIsHoveringToggle(false)}
+                    title={showRealStories ? 'Ver Realidade' : 'Ver Espiritualidade'}
+                  >
+                    <span 
+                      className={isHoveringToggle ? styles.glitchText : ''}
+                      data-text={isHoveringToggle 
+                        ? (showRealStories ? 'Espiritualidade' : 'Realidade') 
+                        : (showRealStories ? 'Realidade' : 'Espiritualidade')
+                      }
+                    >
+                      {isHoveringToggle 
+                        ? (showRealStories ? 'Espiritualidade' : 'Realidade') 
+                        : (showRealStories ? 'Realidade' : 'Espiritualidade')
+                      }
+                    </span>
+                  </button>
+                </div>
+
+                {/* Right stories */}
+                <div className={styles.sideStories}>
+                  <AnimatePresence mode="wait">
+                    {!showRealStories ? (
+                      <motion.div key="bots-right" className={styles.sideStoriesInner} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                        {[
+                          { id: '00000000-0000-0000-0000-000000000005', username: 'Beelzemon', image: '/personagens/BeelzemonT.png' },
+                          { id: '00000000-0000-0000-0000-000000000007', username: 'Belphemon', image: '/personagens/BelphemonT.png' },
+                          { id: '00000000-0000-0000-0000-000000000006', username: 'Lilithmon', image: '/personagens/LilithmonT.png' },
+                          { id: '00000000-0000-0000-0000-000000000008', username: 'Daemon', image: '/personagens/DaemonT.png' },
+                        ].map((s, i) => (
+                          <div key={i} className={styles.sideStoryItem} onClick={() => router.push(`/profile/${s.id}`)}>
+                            <div className={styles.sideStoryRing}>
+                              <div className={styles.sideStoryAvatar}>
+                                {s.image ? (<img src={s.image} alt={s.username} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />) : s.username[0]}
+                              </div>
+                            </div>
+                            <span className={styles.sideStoryName}>{s.username}</span>
+                          </div>
+                        ))}
+                      </motion.div>
+                    ) : (
+                      <motion.div key="real-right" className={styles.sideStoriesInner} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                        {recentUsers.slice(4, 8).map((s, i) => (
+                          <div key={s.id || i} className={styles.sideStoryItem} onClick={() => router.push(`/profile/${s.id}`)}>
+                            <div className={styles.sideStoryRing}>
+                              <div className={`${styles.sideStoryAvatar} ${styles.realStoryAvatar}`}>
+                                {s.avatar_url ? (
+                                  <img src={s.avatar_url} alt={s.username} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                                ) : (s.username?.[0] || '?')}
+                              </div>
+                            </div>
+                            <span className={styles.sideStoryName}>{s.username || 'Manifestação'}</span>
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-              <div className={styles.pulseRow} style={{ marginTop: '1rem' }}>
-                <RealtimePulse 
-                  channelName={`profile-${userId}`} 
-                  label={profile.status || "Sincronizado"}
-                  streak={profile.status_updated_at ? Math.floor((new Date().getTime() - new Date(profile.status_updated_at).getTime()) / (1000 * 60 * 60 * 24)) : 0}
-                />
-              </div>
-            </div>
-          </div>
 
           <div className={`${styles.feed} ${zenMode ? styles.zenFeed : ''}`}>
             <AnimatePresence>
@@ -7476,7 +7597,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   const metaTags = m.metadata?.tags || [];
                   return dbTags.includes(tagFilter) || metaTags.includes(tagFilter);
                 })
-                .map((manifest) => {
+                .map((manifest: any) => {
                 const Icon = ACTIONS.find(a => a.id === manifest.type)?.icon || Sparkles;
                 const allTags = [...new Set([...(postTags[manifest.id] || []), ...(manifest.metadata?.tags || [])])];
                 
@@ -7487,7 +7608,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className={`${styles.manifestation} glass ${manifest.metadata?.is_magic ? styles.magicPulse : ''} ${transcendActive ? styles.transcendMode : ''}`}
+                  className={`${styles.manifestation} glass ${(manifest.metadata as any)?.is_magic ? styles.magicPulse : ''} ${transcendActive ? styles.transcendMode : ''}`}
                   data-window="true"
                   style={{ 
                     transition: 'all 0.6s cubic-bezier(0.23, 1, 0.32, 1)',
@@ -7873,10 +7994,11 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
               );
             })}
             </AnimatePresence>
+            </div>
           </div>
-        </section>
-
-      </div>
+        </div>
+      </section>
+    </div>
 
       <UserPresence
         manifestations={manifestations}
