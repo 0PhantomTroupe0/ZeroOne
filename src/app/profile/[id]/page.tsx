@@ -7715,7 +7715,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     '--vibe-glow': transcendActive 
                       ? (manifest.type === 'integrar' ? 'rgba(255,255,255,0.4)' : `${ACTION_NEON_COLORS[manifest.type] || '#fff'}44`)
                       : 'rgba(255, 255, 255, 0.25)',
-                    '--design-neon': manifest.metadata?.aura || '#00f3ff'
+                    '--design-neon': ACTIONS.find(a => a.id === manifest.type)?.aura || '#00f3ff'
                   } as any}
                 >
                   <div className={styles.manifestHeader}>
@@ -7777,7 +7777,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   )}
 
                   {manifest.content && (
-                    <div key={`content-${manifest.id}`} className={styles.content}>
+                    <p key={`content-${manifest.id}`} className={styles.content}>
                       {manifest.content.split(/\s+/).map((word: string, i: number) => {
                         const ytId = getYoutubeId(word);
                         if (ytId) {
@@ -7799,7 +7799,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                         }
                         return word + " ";
                       })}
-                    </div>
+                    </p>
                   )}
 
                   {manifest.metadata?.audio_url && (
