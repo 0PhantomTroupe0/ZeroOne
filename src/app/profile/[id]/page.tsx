@@ -7777,7 +7777,11 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                   )}
 
                   {manifest.content && (
-                    <div key={`content-${manifest.id}`} className={styles.content}>
+                    <div 
+                      key={`content-${manifest.id}`} 
+                      className={styles.content}
+                      style={{ '--design-neon': ACTION_NEON_COLORS[manifest.type] || '#00f3ff' } as any}
+                    >
                       {manifest.content.split(/\s+/).map((word: string, i: number) => {
                         const ytId = getYoutubeId(word);
                         if (ytId) {
