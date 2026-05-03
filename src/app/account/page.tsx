@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = 'force-dynamic';
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -11,9 +9,9 @@ import {
   Sun, Anchor, Eye, Wind, Atom, Palette, Sparkles 
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import nextDynamic from "next/dynamic";
-const UserPresence = nextDynamic(() => import("@/components/UserPresence"), { ssr: false });
-const ProfileSettings = nextDynamic(() => import("@/components/ProfileSettings"), { ssr: false });
+import dynamic from "next/dynamic";
+const UserPresence = dynamic(() => import("@/components/UserPresence"), { ssr: false });
+const ProfileSettings = dynamic(() => import("@/components/ProfileSettings"), { ssr: false });
 import styles from "./account.module.css";
 
 export default function AccountPage() {
