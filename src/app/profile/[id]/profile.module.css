@@ -2870,7 +2870,7 @@
   position: relative;
   width: 100%;
   max-width: 1250px;
-  margin-top: -55vh !important;
+  margin-top: -70vh !important;
   margin-left: 10vw !important;
   min-height: 800px;
   transition: min-height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
