@@ -2019,7 +2019,8 @@ function HomeContent() {
                   '--vibe-color': transcendActive ? (ACTION_NEON_COLORS[manifest.type] || '#ffffff') : '#ffffff',
                   '--vibe-glow': transcendActive 
                     ? (manifest.type === 'integrar' ? 'rgba(255,255,255,0.4)' : `${ACTION_NEON_COLORS[manifest.type] || '#fff'}44`)
-                    : 'rgba(255, 255, 255, 0.25)'
+                    : 'rgba(255, 255, 255, 0.25)',
+                  '--design-neon': ACTION_NEON_COLORS[manifest.type] || '#00f3ff'
                 } as any}
               >
                 <div className={styles.manifestHeader}>
@@ -2081,7 +2082,11 @@ function HomeContent() {
                 )}
 
                 {manifest.content && (
-                  <div key={`content-${manifest.id}`} className={styles.content}>
+                  <div 
+                    key={`content-${manifest.id}`} 
+                    className={styles.content}
+                    style={{ '--design-neon': ACTION_NEON_COLORS[manifest.type] || '#00f3ff' } as any}
+                  >
                     {manifest.content.split(/\s+/).map((word: string, i: number) => {
                       const ytId = getYoutubeId(word);
                       if (ytId) {
