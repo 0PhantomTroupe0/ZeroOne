@@ -7498,7 +7498,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
           </div>
 
 
-          <div className={styles.floatingFluxoWrapper}>
+          <div className={`${styles.floatingFluxoWrapper} ${!isOwnProfile ? styles.guestView : ''}`}>
             <div className={styles.floatingFluxo}>
                 {/* Center — title + sparks + pulse */}
                 <div className={styles.feedHeaderCenter}>
