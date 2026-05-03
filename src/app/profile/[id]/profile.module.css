@@ -3649,7 +3649,7 @@
 
 .chatBarInHeader {
   width: 100%;
-  margin-top: -1.5rem; /* Ajuste para subir no cabeçalho */
+  margin-top: -3.5rem; /* Ajuste para subir no cabeçalho */
   z-index: 10;
 }
 
