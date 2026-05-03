@@ -346,6 +346,8 @@ function HomeContent() {
   const [user, setUser] = useState<any>(null);
   const [chatAction, setChatAction] = useState(ACTIONS[2]);
   const [message, setMessage] = useState('');
+  const [isHoveringToggle, setIsHoveringToggle] = useState(false);
+
 
   const [loading, setLoading] = useState(true);
   const [currentAura, setCurrentAura] = useState(ACTIONS[3].aura);
@@ -1868,10 +1870,25 @@ function HomeContent() {
               <button 
                 className={styles.storyToggleBtn} 
                 onClick={() => setShowRealStories(!showRealStories)}
-                title={showRealStories ? 'Ver Espiritualidade' : 'Ver Realidade'}
+                onMouseEnter={() => setIsHoveringToggle(true)}
+                onMouseLeave={() => setIsHoveringToggle(false)}
+                title={showRealStories ? 'Ver Realidade' : 'Ver Espiritualidade'}
               >
-                <span>{showRealStories ? 'Espiritualidade' : 'Realidade'}</span>
+                <span 
+                  className={isHoveringToggle ? styles.glitchText : ''}
+                  data-text={isHoveringToggle 
+                    ? (showRealStories ? 'Espiritualidade' : 'Realidade') 
+                    : (showRealStories ? 'Realidade' : 'Espiritualidade')
+                  }
+                >
+                  {isHoveringToggle 
+                    ? (showRealStories ? 'Espiritualidade' : 'Realidade') 
+                    : (showRealStories ? 'Realidade' : 'Espiritualidade')
+                  }
+                </span>
+
               </button>
+
             </div>
 
             {/* Right stories */}

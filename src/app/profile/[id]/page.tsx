@@ -16,6 +16,7 @@ import UserPresence from "@/components/UserPresence";
 import ProfileSettings from "@/components/ProfileSettings";
 import StoryBar from "@/components/StoryBar";
 import RealtimePulse from "@/components/RealtimePulse";
+import LuaProjetada from "@/components/LuaProjetada";
 import styles from "./profile.module.css";
 
 interface Profile {
@@ -131,6 +132,29 @@ const RITUAL_COLORS = [
   '#7000ff', '#ff7000', '#0070ff', '#00ff70', '#ff0070', '#555555'
 ];
 
+const SPARK_COLORS = [
+  '#ff2200', '#ff6600', '#ffdd00', '#aaff00', '#00ff44', '#00ffff',
+  '#0055ff', '#3300ff', '#8800ee', '#ff00cc', null, '#ffffff',
+];
+
+const ACTION_NEON_COLORS: Record<string, string> = {
+  'perceber': '#ff0000', 'observar': '#ff6600', 'sentir': '#ffdd00',
+  'buscar': '#aaff00', 'conectar': '#00ff44', 'expressar': '#00ffff',
+  'criar': '#0055ff', 'cuidar': '#3300ff', 'servir': '#8800ee',
+  'soltar': '#ff00cc', 'integrar': '#000000', 'transcender': '#ffffff',
+};
+
+const FEELING_SYMBOLS = [
+  { id: 'paz', sym: '🕊️', name: 'Paz' },
+  { id: 'fogo', sym: '🔥', name: 'Fogo' },
+  { id: 'agua', sym: '🌊', name: 'Água' },
+  { id: 'terra', sym: '🌱', name: 'Terra' },
+  { id: 'ar', sym: '🌪️', name: 'Ar' },
+  { id: 'luz', sym: '✨', name: 'Luz' },
+  { id: 'sombra', sym: '🌑', name: 'Sombra' },
+  { id: 'amor', sym: '❤️', name: 'Amor' },
+];
+
 const getYoutubeId = (url: string) => {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
@@ -209,8 +233,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const irisX = useMotionValue(0);
   const irisY = useMotionValue(0);
   // Reconfigured for "Super Fast" 1s sweeps vs "Sway" 4s glides
-  const springIrisX = useSpring(irisX, { stiffness: 120, damping: 25 });
-  const springIrisY = useSpring(irisY, { stiffness: 120, damping: 25 });
+  const springIrisX = useSpring(irisX, { stiffness: 500, damping: 40 });
+  const springIrisY = useSpring(irisY, { stiffness: 500, damping: 40 });
   const observerMode = profile?.observer_mode_active || false;
 
   const renderCloakEmblem = () => {
@@ -312,45 +336,32 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   };
 
   useEffect(() => {
-    if (observerMode) {
-      const handleMouseMove = (e: MouseEvent) => {
-        const { innerWidth, innerHeight } = window;
-        const x = (e.clientX / innerWidth - 0.5) * 40;
-        const y = (e.clientY / innerHeight - 0.5) * 40;
-        irisX.set(x);
-        irisY.set(y);
-      };
-      window.addEventListener('mousemove', handleMouseMove);
-      return () => window.removeEventListener('mousemove', handleMouseMove);
-    } else {
-      const interval = setInterval(() => {
-        const now = Date.now() % 21000;
+    const handleMouseMove = (e: MouseEvent) => {
+      const { innerWidth, innerHeight } = window;
+      // Calibrado para um movimento mais sutil (faixa menor) e super responsivo
+      const targetX = (e.clientX / innerWidth - 0.5) * 8;
+      const targetY = (e.clientY / innerHeight - 0.5) * 5;
+      
+      irisX.set(targetX);
+      irisY.set(targetY);
+    };
 
-        if (now > 14000) {
-          irisX.set(0);
-          irisY.set(0);
-          return;
-        }
+    window.addEventListener('mousemove', handleMouseMove);
+    
+    // Pequena animação de "respiração" residual quando parado
+    const interval = setInterval(() => {
+      if (Math.abs(irisX.get()) < 1 && Math.abs(irisY.get()) < 1) {
+        const now = Date.now();
+        irisX.set(Math.sin(now / 1500) * 2);
+        irisY.set(Math.cos(now / 2000) * 1);
+      }
+    }, 100);
 
-        const subNow = now % 4500;
-        let targetX = 0;
-        let targetY = 0;
-
-        if (subNow < 1000) {
-          targetX = Math.sin(now / 200) * 8;
-          targetY = Math.cos(now / 150) * 3;
-        } else {
-          targetX = Math.sin(now / 1200) * 6;
-          targetY = Math.cos(now / 1800) * 2;
-        }
-
-        irisX.set(targetX);
-        irisY.set(targetY);
-      }, 16);
-
-      return () => clearInterval(interval);
-    }
-  }, [irisX, irisY, observerMode]);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      clearInterval(interval);
+    };
+  }, [irisX, irisY]);
   const [manifestations, setManifestations] = useState<Manifestation[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -375,6 +386,17 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const [ritualStep, setRitualStep] = useState(0); // 0: Numbers, 1: Hidden, 2: Elements, 3: Hidden
 
   const [followedUsers, setFollowedUsers] = useState<Set<string>>(new Set());
+  const [activeTagPicker, setActiveTagPicker] = useState<string | null>(null);
+  const [observingManifest, setObservingManifest] = useState<any>(null);
+  const [spiritualNotice, setSpiritualNotice] = useState<string | null>(null);
+  const [activeIntegrationSplash, setActiveIntegrationSplash] = useState<any>(null);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [sparkActive, setSparkActive] = useState(false);
+  const [transcendActive, setTranscendActive] = useState(false);
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
+  const [hiddenPosts, setHiddenPosts] = useState<Set<string>>(new Set());
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const mediaInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
@@ -434,6 +456,15 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       setRitualStep(prev => (prev + 1) % 4);
     }, 7000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Spark / Ritual Cycle (7s)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSparkActive(true);
+      setTimeout(() => setSparkActive(false), 2400); // 2.4s burst
+    }, 7000);
+    return () => clearInterval(timer);
   }, []);
 
   // Atualizar título da aba com o nome do usuário logado
@@ -580,6 +611,61 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     } catch (err) {
       console.error("Erro ao alternar sentimento:", err);
     }
+  };
+
+  const fetchComments = async (nodeIds: string[]) => {
+    if (!nodeIds.length) return;
+    const { data } = await supabase
+      .from('node_comments')
+      .select('*, profiles(username)')
+      .in('node_id', nodeIds)
+      .order('created_at', { ascending: true });
+    
+    if (data) {
+      const grouped: Record<string, any[]> = {};
+      data.forEach(c => {
+        if (!grouped[c.node_id]) grouped[c.node_id] = [];
+        grouped[c.node_id].push(c);
+      });
+      setPostComments(prev => ({ ...prev, ...grouped }));
+    }
+  };
+
+  const handleSendReply = async (nodeId: string) => {
+    const text = commentDraft[nodeId];
+    if (!text || !currentUser) return;
+    const { error } = await supabase
+      .from('node_comments')
+      .insert([{ node_id: nodeId, user_id: currentUser.id, content: text }]);
+    if (!error) {
+      setCommentDraft(prev => ({ ...prev, [nodeId]: '' }));
+      fetchComments([nodeId]);
+    }
+  };
+
+  const handleAddTag = async (nodeId: string) => {
+    const tag = tagInput[nodeId];
+    if (!tag || !currentUser) return;
+    const cleanTag = tag.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!cleanTag) return;
+    const { error } = await supabase
+      .from('node_sentiments')
+      .insert([{ node_id: nodeId, user_id: currentUser.id, sentiment_type: `tag:${cleanTag}` }]);
+    if (!error) {
+      setTagInput(prev => ({ ...prev, [nodeId]: '' }));
+      fetchSentiments([nodeId]);
+    }
+  };
+
+  const handleRemoveTag = async (nodeId: string, tagType: string) => {
+    if (!currentUser) return;
+    const { error } = await supabase
+      .from('node_sentiments')
+      .delete()
+      .eq('node_id', nodeId)
+      .eq('user_id', currentUser.id)
+      .eq('sentiment_type', tagType);
+    if (!error) fetchSentiments([nodeId]);
   };
 
   const handleDeleteNode = async (nodeId: string) => {
@@ -878,6 +964,22 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     }
   };
 
+  const updateEyeColor = async (field: string, value: string | boolean) => {
+    if (!isOwnProfile || !profile) return;
+    try {
+      const finalField = field.startsWith('eye_') ? field : `eye_${field}_color`;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ [finalField]: value })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+      setProfile(prev => prev ? { ...prev, [finalField]: value } : null);
+    } catch (err) {
+      console.error(`Erro ao atualizar campo do olho (${field}):`, err);
+    }
+  };
+
   const updateStoneFrame = async (direction: 1 | -1 = 1) => {
     if (!isOwnProfile || !profile) return;
     try {
@@ -1025,20 +1127,6 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     }
   };
 
-  const updateEyeColor = async (field: string, value: string | boolean) => {
-    if (!isOwnProfile || !profile) return;
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ [field]: value })
-        .eq('id', profile.id);
-
-      if (error) throw error;
-      setProfile(prev => prev ? { ...prev, [field]: value } : null);
-    } catch (err) {
-      console.error(`Erro ao atualizar campo do olho:`, err);
-    }
-  };
 
   const updateCloakType = async (direction: 1 | -1 = 1) => {
     if (!isOwnProfile || !profile) return;
@@ -1358,6 +1446,91 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       title: 'Modo Avatar',
                       color: profile.nexo_color,
                       onClick: updateAvatarMode,
+                    },
+                    },
+                    {
+                      id: 'eye_colors',
+                      icon: <Palette size={18} />,
+                      title: 'Alterar Cores',
+                      color: profile.eye_iris_color || '#fff',
+                      content: (
+                        <div className={styles.miniSettingsMenu} style={{ minWidth: '240px' }}>
+                          <span className={styles.pickerTitle}>Cores do Olhar</span>
+                          <div className={styles.eyeColorInputs}>
+                            {[
+                              { label: 'Íris', field: 'iris' },
+                              { label: 'Esclera', field: 'sclera' },
+                              { label: 'Pupila', field: 'pupil' },
+                              { label: 'Borda', field: 'border' },
+                              { label: 'Brilho Secundário', field: 'secondary' }
+                            ].map(item => (
+                              <div key={item.field} className={styles.eyeInputGroup}>
+                                <label>{item.label}</label>
+                                <div className={styles.colorGridTiny}>
+                                  {RITUAL_COLORS.slice(0, 5).map(c => (
+                                    <button 
+                                      key={c} 
+                                      className={`${styles.colorDot} ${(profile as any)[`eye_${item.field}_color`] === c ? styles.activeDot : ''}`} 
+                                      style={{ backgroundColor: c, color: c } as any} 
+                                      onClick={() => updateEyeColor(item.field, c)} 
+                                    />
+                                  ))}
+                                  <div className={styles.customColorWrapper}>
+                                    <Palette size={8} className={styles.rgbIcon} />
+                                    <input 
+                                      type="color" 
+                                      className={styles.rgbInput} 
+                                      value={(profile as any)[`eye_${item.field}_color`] || '#ffffff'}
+                                      onChange={(e) => updateEyeColor(item.field, e.target.value)}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          <span className={styles.pickerTitle} style={{ marginTop: '15px' }}>Estruturas Ativas</span>
+                          <div className={styles.eyeColorInputs}>
+                            {[
+                              { label: 'Veias', field: 'veins', activeField: 'eye_veins_active' },
+                              { label: 'Cílios', field: 'lashes', activeField: 'eye_lashes_active' }
+                            ].map(item => (
+                              <div key={item.field} className={styles.eyeInputGroup}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                  <label>{item.label}</label>
+                                  <button 
+                                    className={`${styles.assetMiniBtn} ${(profile as any)[item.activeField] ? styles.btnActive : ''}`}
+                                    onClick={() => updateEyeColor(item.activeField, !(profile as any)[item.activeField])}
+                                    style={{ width: '22px', height: '22px', padding: '0', borderRadius: '6px' }}
+                                    title={(profile as any)[item.activeField] ? "Desativar" : "Ativar"}
+                                  >
+                                    <Zap size={10} style={{ color: (profile as any)[item.activeField] ? 'var(--nexo-color)' : 'rgba(255,255,255,0.2)' }} />
+                                  </button>
+                                </div>
+                                <div className={styles.colorGridTiny}>
+                                  {RITUAL_COLORS.slice(0, 5).map(c => (
+                                    <button 
+                                      key={c} 
+                                      className={`${styles.colorDot} ${(profile as any)[`eye_${item.field}_color`] === c ? styles.activeDot : ''}`} 
+                                      style={{ backgroundColor: c, color: c } as any} 
+                                      onClick={() => updateEyeColor(item.field, c)} 
+                                    />
+                                  ))}
+                                  <div className={styles.customColorWrapper}>
+                                    <Palette size={8} className={styles.rgbIcon} />
+                                    <input 
+                                      type="color" 
+                                      className={styles.rgbInput} 
+                                      value={(profile as any)[`eye_${item.field}_color`] || '#ffffff'}
+                                      onChange={(e) => updateEyeColor(item.field, e.target.value)}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )
                     },
                     { 
                       id: 'cloak', 
@@ -6306,9 +6479,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       </radialGradient>
                       <radialGradient id="nebulaGradient" cx="50%" cy="50%" r="50%">
                         <stop offset="0%" stopColor={profile.eye_pupil_color || "#000"} />
-                        <stop offset="35%" stopColor={profile.eye_secondary_color || "#200040"} />
+                        <stop offset="35%" stopColor={profile.eye_secondary_color || "#050510"} />
                         <stop offset="55%" stopColor={profile.eye_iris_color || "var(--nexo-color, #00f3ff)"} stopOpacity="0.9" />
-                        <stop offset="85%" stopColor={profile.eye_secondary_color || "#400080"} stopOpacity="0.7" />
+                        <stop offset="85%" stopColor={profile.eye_secondary_color || "#101025"} stopOpacity="0.7" />
                         <stop offset="100%" stopColor={profile.eye_border_color || "#000"} />
                       </radialGradient>
 
@@ -6772,7 +6945,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                     />
 
                                     {/* ATOMIC HEXAGRAM - Thinner and Longer (Sharper Tips) */}
-                                    {[30, 90, 150].map((rot) => (
+                                    {[33, 93, 153].map((rot) => (
                                       <ellipse
                                         key={`atomic-lobe-${rot}`}
                                         cx="50" cy="50" rx="17.5" ry="3.5"
@@ -6786,7 +6959,12 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                     ))}
 
                                     {/* NESTED HEXAGRAM CONSTRUCT (Secondary Intersecting Triangles - Rotated Offset) */}
-                                    <g filter="url(#cosmicGlow)" transform="rotate(30, 50, 50)">
+                                    <motion.g 
+                                      filter="url(#cosmicGlow)" 
+                                      transform="rotate(35, 50, 50)"
+                                      animate={{ rotate: [35, 395] }}
+                                      transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
+                                    >
                                       {/* Nested Star - Triangle 1 (Points UP R=11) - Curvy 'Fat' Sides */}
                                       <path
                                         d="M50 39 Q57 46 59.5 55.5 Q50 59 40.5 55.5 Q43 46 50 39 Z"
@@ -6807,7 +6985,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                       />
 
                                       {/* THREE-POINTED BLADE (Lamina Ritualística) */}
-                                      <path
+                                      <motion.path
                                         d="M50 38 Q55 46 50 50 Q45 46 50 38 Z 
                                            M50 50 Q56 47 60.4 56 Q51 54 50 50 Z
                                            M50 50 Q44 47 39.6 56 Q49 54 50 50 Z
@@ -6815,6 +6993,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                         fill={profile.eye_pupil_color || "#000"}
                                         fillRule="evenodd"
                                         filter="url(#cosmicGlow)"
+                                        animate={{ rotate: [0, 360] }}
+                                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                                        style={{ transformOrigin: '50% 50%' }}
                                       />
                                       {/* CENTRAL RED CORE (O Buraco Vermelho) */}
                                       <circle
@@ -6823,7 +7004,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                         filter="url(#cosmicGlow)"
                                         opacity="0.9"
                                       />
-                                    </g>
+                                    </motion.g>
                                   </motion.g>
                                 )}
                               </motion.g>
@@ -7235,55 +7416,148 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             </div>
           )}
 
-          <div className={`${styles.mainFlow} glass`}>
-            <div className={styles.feedHeader}>
-              <div className={styles.fluxoStatus}>
-                <h2>Fluxo de Consciência</h2>
-                <RealtimePulse
-                  channelName={`profile-${userId}`}
+          <div className={`${styles.mainFlow} glass`} style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
+            <div className={styles.feedHeader} style={{ padding: '2rem 1rem' }}>
+              <div className={styles.fluxoTitleWrap}>
+                {/* Faíscas ATRÁS da lua, com burst colorido a cada 7s */}
+                {Array.from({ length: 12 }).map((_, i) => {
+                  const color = SPARK_COLORS[i];
+                  const isBlack = color === null;
+                  const activeStyle = sparkActive ? {
+                    filter: isBlack
+                      ? 'drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px #fff)'
+                      : `drop-shadow(0 0 6px ${color}) drop-shadow(0 0 14px ${color})`,
+                    opacity: 1,
+                  } : {};
+                  return (
+                    <div
+                      key={i}
+                      className={styles.sparkRay}
+                      style={{
+                        transform: `rotate(${i * 30}deg)`,
+                        zIndex: 0,
+                        transition: 'filter 1.8s ease-out, opacity 1.8s ease-out',
+                        ...activeStyle,
+                      }}
+                      data-color={isBlack ? '#000000' : (color ?? '#fff')}
+                      data-active={sparkActive ? '1' : '0'}
+                    />
+                  );
+                })}
+
+                {/* Lua transparente — sobre as faíscas, abaixo do título */}
+                <LuaProjetada />
+                <h2 className={styles.fluxoTitle} data-active={sparkActive ? '1' : '0'}>
+                  Fluxo de Consciência
+                </h2>
+              </div>
+              <div className={styles.pulseRow} style={{ marginTop: '1rem' }}>
+                <RealtimePulse 
+                  channelName={`profile-${userId}`} 
                   label={profile.status || "Sincronizado"}
                   streak={profile.status_updated_at ? Math.floor((new Date().getTime() - new Date(profile.status_updated_at).getTime()) / (1000 * 60 * 60 * 24)) : 0}
                 />
               </div>
-              <p>Sincronia com @{profile.username}</p>
             </div>
           </div>
 
-          <div className={styles.feed}>
-            {manifestations.length > 0 ? (
-              manifestations.map((post) => (
-                <motion.div
-                  key={post.id}
-                  className={styles.post}
+          <div className={`${styles.feed} ${zenMode ? styles.zenFeed : ''}`}>
+            <AnimatePresence>
+              {manifestations.length === 0 && (
+                <p key="empty-fluxo" className={styles.emptyHint}>O fluxo está silencioso. @{profile.username} ainda não manifestou.</p>
+              )}
+              {manifestations
+                .filter(m => !hiddenPosts.has(m.id))
+                .filter(m => {
+                  if (!tagFilter) return true;
+                  const dbTags = Object.keys(nodeSentiments[m.id] || {})
+                    .filter(type => type.startsWith('tag:'))
+                    .map(type => type.replace('tag:', ''));
+                  const metaTags = m.metadata?.tags || [];
+                  return dbTags.includes(tagFilter) || metaTags.includes(tagFilter);
+                })
+                .map((manifest) => {
+                const Icon = ACTIONS.find(a => a.id === manifest.type)?.icon || Sparkles;
+                const allTags = [...new Set([...(postTags[manifest.id] || []), ...(manifest.metadata?.tags || [])])];
+                
+                return (
+                <motion.div 
+                  key={manifest.id}
+                  id={`post-${manifest.id}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className={`${styles.manifestation} glass ${manifest.metadata?.is_magic ? styles.magicPulse : ''} ${transcendActive ? styles.transcendMode : ''}`}
+                  data-window="true"
+                  style={{ 
+                    transition: 'all 0.6s cubic-bezier(0.23, 1, 0.32, 1)',
+                    '--vibe-color': transcendActive ? (ACTION_NEON_COLORS[manifest.type] || '#ffffff') : '#ffffff',
+                    '--vibe-glow': transcendActive 
+                      ? (manifest.type === 'integrar' ? 'rgba(255,255,255,0.4)' : `${ACTION_NEON_COLORS[manifest.type] || '#fff'}44`)
+                      : 'rgba(255, 255, 255, 0.25)'
+                  } as any}
                 >
-                  <div className={styles.auraPillar} style={{ color: post.metadata?.aura || '#fff' }} />
-                  <div className={styles.postHeader}>
-                    <span className={styles.actionType}>{post.type.toUpperCase()}</span>
-                    <span className={styles.time}>{new Date(post.created_at).toLocaleString()}</span>
+                  <div className={styles.manifestHeader}>
+                    <div className={styles.headerColumn}>
+                      <span className={styles.username}>
+                        @{manifest.profiles?.username || profile.username || `presenca_${manifest.id.slice(0, 4)}`}
+                      </span>
+                      <span className={styles.timestamp}>
+                        <Clock size={10} style={{ marginRight: 4, opacity: 0.5 }} />
+                        {new Date(manifest.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                        <span style={{ margin: '0 4px', opacity: 0.3 }}>|</span>
+                        {new Date(manifest.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                      </span>
+                      {/* Tags */}
+                      {allTags.length > 0 && (
+                        <div className={styles.tagListInHeader} style={{ marginTop: '2px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                          {allTags.map((tag, i) => (
+                            <span 
+                              key={`header-tag-${manifest.id}-${tag}-${i}`} 
+                              className={styles.tagChip}
+                              onClick={() => setTagFilter(prev => prev === tag ? null : tag)}
+                              style={{ fontSize: '0.55rem', padding: '1px 5px' }}
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
 
-                    {currentUser && currentUser.id === post.user_id && (
-                      <button
-                        className={styles.deleteBtn}
-                        onClick={() => setNodeToDelete(post.id)}
-                        title="Soltar Manifestação"
-                      >
-                        <Wind size={12} />
-                        <span>Soltar</span>
-                      </button>
-                    )}
+                    <div className={styles.headerColumnRight} style={{ marginLeft: 'auto' }}>
+                      {currentUser && currentUser.id === manifest.user_id && (
+                        <button 
+                          className={styles.deleteBtnMinimal}
+                          onClick={() => setNodeToDelete(manifest.id)}
+                          title="Soltar Manifestação"
+                        >
+                          <div 
+                            className={styles.soltarCircle}
+                            style={{ borderColor: profile.nexo_color || '#00f3ff' }}
+                          />
+                        </button>
+                      )}
+                      <span className={styles.actionTagMinimal} title={manifest.type}>
+                        <Icon size={12} style={{ color: ACTIONS.find(a => a.id === manifest.type)?.aura }} />
+                      </span>
+                    </div>
                   </div>
-
-                  {post.metadata?.image_url && (
-                    <div className={styles.feedMedia}>
-                      <img src={post.metadata.image_url} alt="Manifestação" />
+                  
+                  {manifest.metadata?.image_url && (
+                    <div key={`image-${manifest.id}`} className={styles.feedMedia}>
+                      <img 
+                        src={manifest.metadata.image_url} 
+                        alt="Manifestação" 
+                        onClick={() => setFullscreenImage(manifest.metadata.image_url)}
+                        style={{ cursor: 'pointer' }}
+                      />
                     </div>
                   )}
 
-                  {post.content && (
-                    <div className={styles.postContent} data-type={post.type}>
-                      {post.content.split(/\s+/).map((word: string, i: number) => {
+                  {manifest.content && (
+                    <div key={`content-${manifest.id}`} className={styles.content}>
+                      {manifest.content.split(/\s+/).map((word: string, i: number) => {
                         const ytId = getYoutubeId(word);
                         if (ytId) {
                           return (
@@ -7293,165 +7567,207 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                 height="315"
                                 src={`https://www.youtube.com/embed/${ytId}`}
                                 frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
                               ></iframe>
                             </div>
                           );
                         }
-                        return word.startsWith('http') ? <a key={i} href={word} target="_blank" rel="noreferrer" className={styles.link}>{word} </a> : word + " ";
+                        if (word.startsWith('http')) {
+                          return <a key={i} href={word} target="_blank" rel="noopener noreferrer" className={styles.link}>{word} </a>;
+                        }
+                        return word + " ";
                       })}
                     </div>
                   )}
 
-                  <AnimatePresence>
-                    {post.metadata?.repost_of && post.metadata?.repost_snapshot && (
-                      <motion.div
-                        className={styles.repostCard}
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        onClick={() => {
-                          const target = document.getElementById(`post-${post.metadata!.repost_of}`);
-                          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }}
-                      >
-                        <div className={styles.repostHeader}>
-                          <Compass size={12} className={styles.repostIcon} />
-                          <span>Manifestação de @{post.metadata.repost_snapshot.author}</span>
-                        </div>
-                        <div className={styles.repostContent}>
-                          {post.metadata.repost_snapshot.image && (
-                            <div className={styles.repostImage}>
-                              <img src={post.metadata.repost_snapshot.image} alt="Original" />
-                            </div>
-                          )}
-                          <p>{post.metadata.repost_snapshot.content}</p>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {post.metadata?.audio_url && (
-                    <div className={styles.audioFeedContainer}>
-                      <audio controls src={post.metadata.audio_url}>Seu navegador não suporta áudio.</audio>
+                  {manifest.metadata?.audio_url && (
+                    <div key={`audio-${manifest.id}`} className={styles.audioFeedContainer}>
+                      <audio controls src={manifest.metadata.audio_url}>
+                        Seu navegador não suporta áudio.
+                      </audio>
                     </div>
                   )}
 
-                  {/* Reactions Display - Only visible in Observation Mode with transition */}
+                  {/* Tag Picker UI */}
                   <AnimatePresence>
-                    {zenMode && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
-                        style={{ overflow: 'hidden' }}
+                    {activeTagPicker === manifest.id && (
+                      <motion.div 
+                        key={`tag-picker-${manifest.id}`}
+                        initial={{ opacity: 0, height: 0, y: -10 }}
+                        animate={{ opacity: 1, height: 'auto', y: 0 }}
+                        exit={{ opacity: 0, height: 0, y: -10 }}
+                        className={styles.tagPickerContainer}
                       >
-                        {(() => {
-                          const dbSentiments = nodeSentiments[post.id] || {};
-                          const reactions = Object.keys(dbSentiments).filter(type =>
-                            !VIRTUES.some(v => v.id === type) && type !== 'apoio'
-                          ).map(type => ({
-                            type,
-                            emoji: type === 'soltar' ? '💨' : (type === 'servir' ? '⚓' : type),
-                            count: dbSentiments[type].count,
-                            userReacted: dbSentiments[type].userReacted
-                          }));
+                        <div className={styles.tagInputWrapper}>
+                          <Hash size={14} className={styles.tagIcon} />
+                          <input 
+                            className={styles.tagInput}
+                            placeholder="Adicionar etiqueta..."
+                            value={tagInput[manifest.id] || ''}
+                            onChange={e => setTagInput(prev => ({...prev, [manifest.id]: e.target.value}))}
+                            onKeyDown={e => e.key === 'Enter' && handleAddTag(manifest.id)}
+                            autoFocus
+                          />
+                          <button className={styles.tagAddBtn} onClick={() => handleAddTag(manifest.id)}>
+                            <Check size={14} />
+                          </button>
+                        </div>
 
-                          if (reactions.length === 0) return null;
+                        {/* Tags Existentes com Opção de Remover */}
+                        <div className={styles.tagListPreview}>
+                          {Object.keys(nodeSentiments[manifest.id] || {})
+                            .filter(t => t.startsWith('tag:'))
+                            .map(t => {
+                              const isOwner = manifest.user_id === currentUser?.id;
+                              const userReacted = nodeSentiments[manifest.id][t].userReacted;
+                              const canRemove = isOwner || userReacted;
 
-                          return (
-                            <div className={styles.supportReactionRow} style={{ marginBottom: '1rem' }}>
-                              {reactions.map(({ type, emoji, count, userReacted }, i) => (
-                                <span
-                                  key={i}
-                                  className={`${styles.supportEmoji} ${userReacted ? styles.userReactedEmoji : ''}`}
-                                  title={`${count} vibrações`}
-                                  onClick={() => handleToggleSentiment(post.id, type)}
-                                >
-                                  {emoji} {count > 1 && <small style={{ fontSize: '0.65rem', opacity: 0.8, marginLeft: '4px' }}>{count}</small>}
+                              return (
+                                <span key={`${manifest.id}-${t}`} className={styles.activeTagBadge}>
+                                  #{t.replace('tag:', '')}
+                                  {canRemove && (
+                                    <button 
+                                      className={styles.removeTagBtn}
+                                      onClick={() => handleRemoveTag(manifest.id, t)}
+                                      title={isOwner ? "Remover tag (Dono)" : "Remover minha tag"}
+                                    >
+                                      <X size={10} />
+                                    </button>
+                                  )}
                                 </span>
-                              ))}
-                            </div>
-                          );
-                        })()}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Virtue Reaction Badges - Only visible in Observation Mode with transition */}
-                  <AnimatePresence>
-                    {zenMode && nodeSentiments[post.id] && Object.keys(nodeSentiments[post.id]).length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
-                        style={{ overflow: 'hidden' }}
-                      >
-                        <div className={styles.sentimentRow} style={{ marginBottom: '1rem' }}>
-                          {VIRTUES.filter(v => nodeSentiments[post.id][v.id]).map(v => (
-                            <div
-                              key={v.id}
-                              className={styles.sentimentBadge}
-                              data-active={nodeSentiments[post.id][v.id].userReacted}
-                              style={{ '--sentiment-rgb': v.rgb } as any}
-                              onClick={() => handleToggleSentiment(post.id, v.id)}
-                            >
-                              <span>{v.icon}</span>
-                              <span className={styles.sentimentCount}>{nodeSentiments[post.id][v.id].count}</span>
-                            </div>
-                          ))}
+                              );
+                            })
+                          }
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
+                  {/* ── MINI NEXUS FOOTER ─ 12 Ações Funcionais ── */}
                   <div className={styles.miniNexusFooter}>
                     {ACTIONS.map(action => {
                       const ActionIcon = action.icon;
                       let isActive = false;
-                      if (action.id === 'sentir') isActive = activeSentimentPicker === post.id;
-                      if (action.id === 'cuidar') isActive = activeCuidarPicker === post.id;
-                      if (action.id === 'integrar') isActive = showTagInput === post.id;
-                      if (action.id === 'perceber') isActive = activeRevealedPost === post.id;
-                      if (action.id === 'observar') isActive = zenMode;
-
+                      if (action.id === 'buscar') isActive = activeTagPicker === manifest.id;
+                      if (action.id === 'integrar') isActive = followedUsers.has(manifest.user_id);
+                      if (action.id === 'perceber') isActive = activeRevealedPost === manifest.id;
+                      if (action.id === 'sentir') isActive = activeSentimentPicker === manifest.id;
+                      if (action.id === 'cuidar') isActive = activeCuidarPicker === manifest.id;
+                      if (action.id === 'observar') isActive = observingManifest?.id === manifest.id;
                       return (
-                        <button
-                          key={action.id}
-                          className={`${styles.miniNexusBtn} ${isActive ? styles.miniNexusBtnActive : ''}`}
-                          onClick={() => handleActionOnPost(action.id, post)}
-                          title={action.name}
-                          style={{ '--action-aura': action.aura } as any}
-                        >
-                          <ActionIcon size={14} />
-                          <span>{action.name}</span>
-                        </button>
+                        <div key={`action-wrap-${manifest.id}-${action.id}`} className={styles.actionWrapper}>
+                          <button
+                            className={`${styles.miniNexusBtn} ${isActive ? styles.miniNexusBtnActive : ''}`}
+                            onClick={() => handleActionOnPost(action.id, manifest)}
+                            title={action.name}
+                            style={{ '--action-aura': action.aura } as any}
+                          >
+                            <ActionIcon size={13} />
+                          </button>
+
+                          {/* Local Vibrational Report (Floating above button) */}
+                          <AnimatePresence>
+                            {action.id === 'observar' && observingManifest?.id === manifest.id && (
+                              <motion.div
+                                key={`local-report-${manifest.id}`}
+                                className={styles.floatingVibrationalReportLocal}
+                                initial={{ opacity: 0, scale: 0.9, y: 10, x: '-50%' }}
+                                animate={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
+                                exit={{ opacity: 0, scale: 0.9, y: 10, x: '-50%' }}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <button className={styles.closeReportBtn} onClick={() => setObservingManifest(null)} style={{ top: '0.5rem', right: '0.5rem' }}>
+                                  <X size={14} />
+                                </button>
+                                <div className={styles.reportHeader} style={{ fontSize: '0.65rem', marginBottom: '0.2rem' }}>Relatório Vibracional</div>
+                                
+                                <div className={styles.reportRow}>
+                                  {(() => {
+                                    const mId = manifest.id;
+                                    const dbs = nodeSentiments[mId] || {};
+                                    const reactData = Object.keys(dbs).filter(t => 
+                                      !VIRTUES.some(v => v.id === t) && t !== 'apoio'
+                                    ).map(t => ({
+                                      t,
+                                      e: t === 'soltar' ? '💨' : 
+                                         t === 'servir' ? '⚓' : 
+                                         t === 'perceber' ? '👁️' : 
+                                         t === 'buscar' ? '🧭' : 
+                                         t === 'conectar' ? '🔗' : 
+                                         t === 'integrar' ? '⚛️' : 
+                                         t === 'expressar' ? '📣' : 
+                                         (t.startsWith('sentir:') ? (FEELING_SYMBOLS.find(f => `sentir:${f.id.toLowerCase()}` === t)?.sym || '🧠') : 
+                                           (t.startsWith('tag:') ? '🏷️' : t)),
+                                      c: dbs[t].count,
+                                      u: dbs[t].userReacted
+                                    }));
+
+                                    const renderedReacts = reactData.map(({ t, e, c, u }) => (
+                                      <span 
+                                        key={`local-reac-${mId}-${t}`} 
+                                        className={`${styles.reportBadge} ${u ? styles.activeBadge : ''}`}
+                                        style={{ padding: '0.2rem 0.4rem', fontSize: '0.6rem' }}
+                                        onClick={() => handleToggleSentiment(mId, t)}
+                                      >
+                                        <span className={styles.badgeEmoji}>{e}</span>
+                                        <span className={styles.badgeCount}>{c}</span>
+                                      </span>
+                                    ));
+
+                                    const renderedVirtues = VIRTUES.filter(v => (dbs[v.id]?.count || 0) > 0).map(v => (
+                                      <div 
+                                        key={`local-virtue-${mId}-${v.id}`} 
+                                        className={styles.virtueReportBadge}
+                                        style={{ '--virtue-color': v.rgb, fontSize: '0.6rem', padding: '0.2rem 0.5rem' } as any}
+                                        onClick={() => handleToggleSentiment(mId, v.id)}
+                                      >
+                                        <span style={{ fontSize: '0.8rem' }}>{v.icon}</span>
+                                        <span className={styles.virtueCount}>{dbs[v.id].count}</span>
+                                      </div>
+                                    ));
+
+                                    if (renderedReacts.length === 0 && renderedVirtues.length === 0) {
+                                      return <div style={{ fontSize: '0.6rem', opacity: 0.4, fontStyle: 'italic', width: '100%', textAlign: 'center' }}>Em repouso.</div>;
+                                    }
+
+                                    return [...renderedReacts, ...renderedVirtues];
+                                  })()}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
                       );
                     })}
                   </div>
 
                   {/* Emoji Care Picker (CUIDAR) */}
                   <AnimatePresence>
-                    {activeCuidarPicker === post.id && (
+                    {activeCuidarPicker === manifest.id && (
                       <motion.div
                         className={styles.sentimentPickerOverlay}
+                        style={{ position: 'relative', bottom: 'auto', marginTop: '0.5rem' }}
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                       >
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', padding: '0.5rem' }}>
+                        <div className={styles.sentimentPickerHeader}>Escolha sua Vibração de Cuidado</div>
+                        <div className={styles.horizontalPickerScroll}>
                           {CARE_EMOJIS.map(({ emoji, label }) => (
                             <div
-                              key={emoji}
+                              key={`care-${manifest.id}-${emoji}`}
                               className={styles.sentimentOption}
+                              title={label}
                               onClick={async () => {
-                                await handleToggleSentiment(post.id, emoji);
                                 setActiveCuidarPicker(null);
+                                if (currentUser) {
+                                  handleToggleSentiment(manifest.id, emoji);
+                                }
                               }}
                             >
                               <span style={{ fontSize: '1.2rem' }}>{emoji}</span>
-                              <span style={{ fontSize: '0.65rem', opacity: 0.7 }}>{label}</span>
+                              <span style={{ fontSize: '0.6rem', opacity: 0.75, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
                             </div>
                           ))}
                         </div>
@@ -7461,25 +7777,27 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
                   {/* Virtue Sentiment Picker (SENTIR) */}
                   <AnimatePresence>
-                    {activeSentimentPicker === post.id && (
-                      <motion.div
+                    {activeSentimentPicker === manifest.id && (
+                      <motion.div 
                         className={styles.sentimentPickerOverlay}
+                        style={{ position: 'relative', bottom: 'auto', marginTop: '0.5rem' }}
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                       >
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', padding: '0.5rem' }}>
-                          {VIRTUES.map(v => (
-                            <div
-                              key={v.id}
+                        <div className={styles.sentimentPickerHeader}>Sintonize seu Sentir</div>
+                        <div className={styles.sentimentSymbolsGrid}>
+                          {FEELING_SYMBOLS.map(f => (
+                            <div 
+                              key={`feel-${manifest.id}-${f.id}`} 
                               className={styles.sentimentOption}
                               onClick={() => {
-                                handleToggleSentiment(post.id, v.id);
+                                handleToggleSentiment(manifest.id, `sentir:${f.id.toLowerCase()}`);
                                 setActiveSentimentPicker(null);
                               }}
                             >
-                              <span>{v.icon}</span>
-                              <span>{v.name}</span>
+                              <span style={{ fontSize: '1.2rem' }}>{f.sym}</span>
+                              <span style={{ fontSize: '0.65rem', opacity: 0.8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.name}</span>
                             </div>
                           ))}
                         </div>
@@ -7487,86 +7805,50 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     )}
                   </AnimatePresence>
 
-                  {/* Tag Input (INTEGRAR) */}
+                  {/* Repost Display */}
                   <AnimatePresence>
-                    {/* Tags Display (Meta + Sentiments) */}
-                    {(() => {
-                      const sents = nodeSentiments[post.id] || {};
-                      const dbTags = Object.keys(sents)
-                        .filter(type => type.startsWith('tag:'))
-                        .map(type => ({
-                          name: type.replace('tag:', ''),
-                          count: sents[type].count,
-                          userReacted: sents[type].userReacted
-                        }));
-
-                      const metaTags = (post.metadata?.tags || []).map((t: string) => ({
-                        name: t,
-                        count: 1,
-                        isMeta: true
-                      }));
-
-                      const uniqueTags = [...dbTags];
-                      metaTags.forEach((mt: any) => {
-                        if (!uniqueTags.find(ut => ut.name === mt.name)) {
-                          uniqueTags.push(mt);
-                        }
-                      });
-
-                      if (uniqueTags.length === 0) return null;
-
-                      return (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-                          {uniqueTags.map((t, i) => (
-                            <span
-                              key={i}
-                              className={`${styles.postTag} ${t.userReacted ? styles.activePostTag : ''}`}
-                              style={{
-                                cursor: 'pointer',
-                                padding: '0.2rem 0.5rem',
-                                borderRadius: '4px',
-                                background: t.userReacted ? 'var(--accent-glow)' : 'rgba(255,255,255,0.05)',
-                                fontSize: '0.75rem',
-                                border: '1px solid rgba(255,255,255,0.1)'
-                              }}
-                            >
-                              #{t.name} {t.count > 1 && <small>({t.count})</small>}
-                            </span>
-                          ))}
-                        </div>
-                      );
-                    })()}
-
-                    {showTagInput === post.id && (
-                      <motion.div
-                        className={styles.tagInputRow}
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
+                    {manifest.metadata?.repost_of && manifest.metadata?.repost_snapshot && (
+                      <motion.div 
+                        key={`repost-${manifest.id}`}
+                        className={styles.repostCard}
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        onClick={() => {
+                          const target = document.getElementById(`post-${manifest.metadata.repost_of}`);
+                          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }}
                       >
-                        <input
-                          className={styles.tagInputField}
-                          placeholder="#tag-universal"
-                          value={tagInput[post.id] || ''}
-                          onChange={e => setTagInput(prev => ({ ...prev, [post.id]: e.target.value }))}
-                          onKeyDown={e => e.key === 'Enter' && handleAddTag(post.id)}
-                          autoFocus
-                        />
-                        <button className={styles.tagAddBtn} onClick={() => handleAddTag(post.id)}>Integrar</button>
+                        <div className={styles.repostHeader}>
+                          <Compass size={12} className={styles.repostIcon} />
+                          <span>Manifestação de @{manifest.metadata.repost_snapshot.author}</span>
+                        </div>
+                        <div className={styles.repostContent}>
+                          {manifest.metadata.repost_snapshot.image && (
+                            <div className={styles.repostImage}>
+                              <img src={manifest.metadata.repost_snapshot.image} alt="Original" />
+                            </div>
+                          )}
+                          <p>{manifest.metadata.repost_snapshot.content}</p>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
                   {/* Comment Thread (PERCEBER) */}
                   <AnimatePresence>
-                    {activeRevealedPost === post.id && (
+                    {activeRevealedPost === manifest.id && (
                       <motion.div
                         className={styles.commentThread}
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                       >
-                        {(postComments[post.id] || []).map((c: any) => (
+                        <div className={styles.commentThreadHeader}>
+                          <Sun size={13} />
+                          <span>Percepções ({postComments[manifest.id]?.length || 0})</span>
+                        </div>
+                        {(postComments[manifest.id] || []).map((c: any) => (
                           <div key={c.id} className={styles.commentItem}>
                             <span className={styles.commentAuthor}>@{c.profiles?.username || 'voz'}</span>
                             <span className={styles.commentContent}>{c.content}</span>
@@ -7576,20 +7858,21 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                           <input
                             className={styles.commentInput}
                             placeholder="Sua percepção..."
-                            value={commentDraft[post.id] || ''}
-                            onChange={e => setCommentDraft(prev => ({ ...prev, [post.id]: e.target.value }))}
-                            onKeyDown={e => e.key === 'Enter' && handleSendReply(post.id)}
+                            value={commentDraft[manifest.id] || ''}
+                            onChange={e => setCommentDraft(prev => ({...prev, [manifest.id]: e.target.value}))}
+                            onKeyDown={e => e.key === 'Enter' && handleSendReply(manifest.id)}
                           />
-                          <button onClick={() => handleSendReply(post.id)}><Send size={14} /></button>
+                          <button className={styles.commentSendBtn} onClick={() => handleSendReply(manifest.id)}>
+                            <Send size={13} />
+                          </button>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </motion.div>
-              ))
-            ) : (
-              <div className={styles.noPosts}>Nenhuma manifestação detectada nesta frequência.</div>
-            )}
+              );
+            })}
+            </AnimatePresence>
           </div>
         </section>
 
