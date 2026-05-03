@@ -3665,7 +3665,7 @@
 }
 
 .upwardShift {
-  transform: translateY(-35vh);
+  transform: translateY(0);
   transition: transform 0.5s ease;
 }
 .pulseShiftDown {
