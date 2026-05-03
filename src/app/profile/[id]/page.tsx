@@ -521,7 +521,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         .from('consciousness_nodes')
         .select('*')
         .eq('user_id', userId)
-        .is('metadata->>reply_to', null) // Excluir comentários do feed principal
+        .is('metadata->reply_to', null) // Excluir comentários do feed principal
         .not('type', 'in', '("perceber", "observar")') // Excluir tipos reativos do feed principal
         .order('created_at', { ascending: false });
 
@@ -589,7 +589,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
           if (payload.eventType === 'INSERT') {
             const newNode = payload.new as any;
             // Se for uma resposta ou tipo reativo, não adicionar ao feed principal
-            const isReply = newNode.metadata?.reply_to || (typeof newNode.metadata === 'string' && JSON.parse(newNode.metadata).reply_to);
+            const meta = typeof newNode.metadata === 'string' ? JSON.parse(newNode.metadata) : newNode.metadata;
+            const isReply = meta?.reply_to;
             if (isReply || newNode.type === 'perceber' || newNode.type === 'observar') return;
 
             setManifestations((prev) => {
