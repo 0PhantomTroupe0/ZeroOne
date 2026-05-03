@@ -2867,7 +2867,7 @@
   position: relative; /* Diferente da home que Ã© fixed, no perfil Ã© parte do layout */
   width: 100%;
   max-width: 1250px;
-  margin: 2rem auto;
+  margin: -15vh auto 2rem;
   min-height: 800px;
   transition: min-height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 34px;
