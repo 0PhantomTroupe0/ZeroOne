@@ -1487,12 +1487,12 @@
 
 /* === LAYOUT & CHAT === */
 .contentLayout {
-  max-width: 100%;
-  margin: 0;
-  padding: 2rem 5vw;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0;
+  grid-template-columns: 1fr auto;
+  gap: 4rem;
   align-items: start;
 }
 
@@ -2603,9 +2603,6 @@
 
 .mainColumn {
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .rightColumn {
@@ -2867,10 +2864,10 @@
 /* === ESTADOS DE CONSCIÃŠNCIA (Nascente Universal Sync) === */
 
 .floatingFluxoWrapper {
-  position: relative;
+  position: relative; /* Diferente da home que Ã© fixed, no perfil Ã© parte do layout */
   width: 100%;
   max-width: 1250px;
-  transform: translate(10vw, -40vh) !important;
+  margin: -25vh auto 2rem;
   min-height: 800px;
   transition: min-height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 34px;
@@ -3213,7 +3210,7 @@
 /* Manifestation Styles */
 .manifestation {
   width: 92%;
-  max-width: 1000px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 1.5rem;
   border-radius: 0;
@@ -3648,7 +3645,7 @@
 
 .chatBarInHeader {
   width: 100%;
-  margin-top: -3.5rem; /* Ajuste para subir no cabeçalho */
+  margin-top: -1.5rem; /* Ajuste para subir no cabeçalho */
   z-index: 10;
 }
 
@@ -3665,7 +3662,7 @@
 }
 
 .upwardShift {
-  transform: translateY(0);
+  transform: translateY(-13vh);
   transition: transform 0.5s ease;
 }
 .pulseShiftDown {
