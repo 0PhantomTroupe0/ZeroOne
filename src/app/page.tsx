@@ -654,10 +654,9 @@ function HomeContent() {
         { event: 'INSERT', schema: 'public', table: 'consciousness_nodes' }, 
         async (payload) => {
           const newNode = payload.new as any;
-          // Se for uma resposta, não adicionar ao feed principal
-          if (newNode.metadata?.reply_to) return;
-          // Se for um tipo reativo, não adicionar ao feed principal
-          if (newNode.type === 'perceber' || newNode.type === 'observar') return;
+          // Se for uma resposta ou tipo reativo, não adicionar ao feed principal
+          const isReply = newNode.metadata?.reply_to || (typeof newNode.metadata === 'string' && JSON.parse(newNode.metadata).reply_to);
+          if (isReply || newNode.type === 'perceber' || newNode.type === 'observar') return;
 
           // Se o post for de um bot (conta simulada), pegar os dados locais
           const bot = SIMULATED_ACCOUNTS[newNode.user_id];
@@ -738,7 +737,7 @@ function HomeContent() {
       let query = supabase
         .from('consciousness_nodes')
         .select('*, profiles(username, avatar_url)')
-        .is('metadata->reply_to', null) // Excluir comentários do feed principal
+        .is('metadata->>reply_to', null) // Excluir comentários do feed principal
         .not('type', 'in', '("perceber", "observar")') // Excluir tipos reativos do feed principal
         .order('created_at', { ascending: false })
         .range(currentOffset, currentOffset + PAGE_SIZE - 1);
