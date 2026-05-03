@@ -106,6 +106,17 @@ const ACTIONS = [
   { id: 'transcender', name: "Transcender", aura: "var(--aura-transcend)", icon: Sparkles },
 ];
 
+const SIMULATED_ACCOUNTS: Record<string, { name: string; avatar: string; phrase: string }> = {
+  '00000000-0000-0000-0000-000000000001': { name: 'Ilusionmon', avatar: '/personagens/IlusiomonsT.png', phrase: "Eu não minto… eu só mostro o que você quer acreditar." },
+  '00000000-0000-0000-0000-000000000002': { name: 'Lucemon', avatar: '/personagens/LucemonF.png', phrase: "Eu te faço acreditar que você já chegou no topo… cuidado comigo." },
+  '00000000-0000-0000-0000-000000000003': { name: 'Barbamon', avatar: '/personagens/BarbamonT.png', phrase: "Eu te prometo segurança… mas te prendo na escassez." },
+  '00000000-0000-0000-0000-000000000004': { name: 'Leviamon', avatar: '/personagens/LeviamonT.png', phrase: "Eu te faço confortável… enquanto sua vida para." },
+  '00000000-0000-0000-0000-000000000005': { name: 'Beelzemon', avatar: '/personagens/BeelzemonT.png', phrase: "Eu te faço olhar para o outro… e esquecer de si." },
+  '00000000-0000-0000-0000-000000000006': { name: 'Lilithmon', avatar: '/personagens/LilithmonT.png', phrase: "Eu te confundo com prazer… mas te esvazio por dentro." },
+  '00000000-0000-0000-0000-000000000007': { name: 'Belphemon', avatar: '/personagens/BelphemonT.png', phrase: "Eu nunca estou satisfeito… e ensino você a nunca estar também." },
+  '00000000-0000-0000-0000-000000000008': { name: 'Daemon', avatar: '/personagens/DaemonT.png', phrase: "Eu te dou força… mas tiro seu controle." },
+};
+
 const VIRTUES = [
   { id: 'humildade', name: 'Humildade', color: '#FFD700', rgb: '255, 215, 0', icon: '✨' },
   { id: 'temperanca', name: 'Temperança', color: '#00FA9A', rgb: '0, 250, 154', icon: '⚖️' },
@@ -689,17 +700,24 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     }
   };
 
-  const handleAddTag = async (nodeId: string) => {
-    const tag = tagInput[nodeId];
-    if (!tag || !currentUser) return;
-    const cleanTag = tag.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (!cleanTag) return;
+  const handleAddTag = async (manifestId: string) => {
+    const rawTag = tagInput[manifestId]?.trim();
+    if (!rawTag || !currentUser) return;
+    
+    // Remover # se houver e normalizar
+    const tag = rawTag.startsWith('#') ? rawTag.slice(1) : rawTag;
+    
     const { error } = await supabase
       .from('node_sentiments')
-      .insert([{ node_id: nodeId, user_id: currentUser.id, sentiment_type: `tag:${cleanTag}` }]);
+      .insert([{ 
+        user_id: currentUser.id, 
+        node_id: manifestId, 
+        sentiment_type: `tag:${tag}`
+      }]);
+    
     if (!error) {
-      setTagInput(prev => ({ ...prev, [nodeId]: '' }));
-      fetchSentiments([nodeId]);
+      setTagInput(prev => ({ ...prev, [manifestId]: '' }));
+      fetchSentiments([manifestId]);
     }
   };
 
@@ -716,17 +734,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
   const handleDeleteNode = async (nodeId: string) => {
     if (!currentUser) return;
-
     try {
-      const { error } = await supabase
-        .from('consciousness_nodes')
-        .delete()
-        .eq('id', nodeId)
-        .eq('user_id', currentUser.id);
-
+      const { error } = await supabase.from('consciousness_nodes').delete().eq('id', nodeId).eq('user_id', currentUser.id);
       if (error) throw error;
-
-      // Update local state
       setManifestations(prev => prev.filter(m => m.id !== nodeId));
       setNodeToDelete(null);
     } catch (err) {
@@ -735,36 +745,111 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     }
   };
 
+  const handleIntegrateWorld = async (targetUserId: string) => {
+    try {
+      if (!currentUser) {
+        setSpiritualNotice("Harmonização necessária para integração.");
+        return;
+      }
+      
+      if (currentUser.id === targetUserId) {
+        setSpiritualNotice("Você já habita sua própria essência.");
+        return;
+      }
+      const bot = SIMULATED_ACCOUNTS[targetUserId];
+      if (bot) {
+        await supabase.from('world_requests').insert({ requester_id: currentUser.id, target_id: targetUserId, status: 'accepted' });
+        await supabase.from('user_follows').insert({ follower_id: currentUser.id, following_id: targetUserId });
+        setFollowedUsers(prev => new Set([...Array.from(prev), targetUserId]));
+        setActiveIntegrationSplash(bot);
+        return;
+      }
+      const { data: follow } = await supabase.from('user_follows').select('*').eq('follower_id', currentUser.id).eq('following_id', targetUserId).single();
+      if (follow) {
+        setSpiritualNotice("Integração já estabelecida nesta frequência.");
+        return;
+      }
+      const { data: existing } = await supabase.from('world_requests').select('*').eq('requester_id', currentUser.id).eq('target_id', targetUserId).single();
+      if (existing) {
+        if (existing.status === 'pending') setSpiritualNotice("Seu sinal de sintonização ainda está ecoando...");
+        else if (existing.status === 'denied') setSpiritualNotice("Consciência em isolamento facultativo.");
+        return;
+      }
+      const { error: requestError } = await supabase.from('world_requests').insert({ requester_id: currentUser.id, target_id: targetUserId, status: 'pending' });
+      if (requestError) throw requestError;
+      const { data: profileData } = await supabase.from('profiles').select('username').eq('id', currentUser.id).single();
+      await supabase.from('notifications').insert({
+        user_id: targetUserId, type: 'world_request', title: 'Nova Sintonização',
+        content: `${profileData?.username || 'Uma consciência'} quer entrar no seu mundo.`,
+        link: `/profile/${currentUser.id}`, is_read: false
+      });
+      setSpiritualNotice("Pedido de integração propagado ao nexo alvo.");
+    } catch (err) {
+      console.error("Erro ao integrar mundo:", err);
+    }
+  };
+
   const handleActionOnPost = async (actionId: string, manifest: any) => {
     switch (actionId) {
-      case 'cuidar': {
-        const isOpening = activeCuidarPicker !== manifest.id;
-        setActiveCuidarPicker(isOpening ? manifest.id : null);
+      // 🔍 BUSCAR → Abrir Seletor de Etiquetas (TAGS)
+      case 'buscar': {
+        const isOpening = activeTagPicker !== manifest.id;
+        setActiveTagPicker(isOpening ? manifest.id : null);
         if (isOpening) {
+          setActiveCuidarPicker(null);
           setActiveSentimentPicker(null);
-          setShowTagInput(null);
           setActiveRevealedPost(null);
         }
         break;
       }
+      // 💙 SENTIR → abre seletor de virtudes
       case 'sentir': {
         const isOpening = activeSentimentPicker !== manifest.id;
         setActiveSentimentPicker(isOpening ? manifest.id : null);
         if (isOpening) {
           setActiveCuidarPicker(null);
-          setShowTagInput(null);
           setActiveRevealedPost(null);
+          setActiveTagPicker(null);
         }
         break;
       }
+      // 🤍 CUIDAR → abre seletor de emoticons
+      case 'cuidar': {
+        const isOpening = activeCuidarPicker !== manifest.id;
+        setActiveCuidarPicker(isOpening ? manifest.id : null);
+        if (isOpening) {
+          setActiveSentimentPicker(null);
+          setActiveRevealedPost(null);
+          setActiveTagPicker(null);
+        }
+        break;
+      }
+      // 🤝 CONECTAR → adicionar tag ao post
+      case 'conectar': {
+        handleToggleSentiment(manifest.id, 'conectar');
+        break;
+      }
+      // ⚡ EXPRESSAR → preparar repost
+      case 'expressar': {
+        setRepostTarget({
+          id: manifest.id,
+          author: manifest.profiles?.username || 'consciencia',
+          content: manifest.content,
+          image: manifest.metadata?.image_url
+        });
+        setChatAction(ACTIONS.find(a => a.id === 'expressar')!);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        break;
+      }
+      // 👁️ PERCEBER → revelar contexto/comentários
       case 'perceber': {
         const isOpening = activeRevealedPost !== manifest.id;
         setActiveRevealedPost(isOpening ? manifest.id : null);
+        handleToggleSentiment(manifest.id, 'perceber');
         if (isOpening) {
           setActiveCuidarPicker(null);
           setActiveSentimentPicker(null);
-          setShowTagInput(null);
-
+          setActiveTagPicker(null);
           if (!postComments[manifest.id]) {
             const { data } = await supabase
               .from('consciousness_nodes')
@@ -776,39 +861,51 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         }
         break;
       }
-      case 'integrar': {
-        const isOpening = showTagInput !== manifest.id;
-        setShowTagInput(isOpening ? manifest.id : null);
-        if (isOpening) {
-          setActiveCuidarPicker(null);
-          setActiveSentimentPicker(null);
-          setActiveRevealedPost(null);
-        }
-        break;
-      }
+      // 🙏 SERVIR → reagir e abrir perfil
       case 'servir': {
-        if (manifest.id) {
-          handleToggleSentiment(manifest.id, 'servir');
-        }
+        if (manifest.id) handleToggleSentiment(manifest.id, 'servir');
         if (manifest.user_id && manifest.user_id !== userId) {
           router.push(`/profile/${manifest.user_id}`);
         }
         break;
       }
+      // 🌕 OBSERVAR → Relatório Vibracional Flutuante / Zen Mode
       case 'observar': {
-        setZenMode(prev => !prev);
+        if (observingManifest?.id === manifest.id) {
+          setObservingManifest(null);
+        } else {
+          setObservingManifest(manifest);
+        }
         break;
       }
-      case 'expressar': {
-        setRepostTarget({
-          id: manifest.id,
-          author: manifest.profiles?.username || 'consciencia',
-          content: manifest.content,
-          image: manifest.metadata?.image_url
-        });
-        setChatAction(ACTIONS.find(a => a.id === 'expressar')!);
-        // Scroll to chat input
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // In profile, chat is often at top or sticky
+      // 💨 SOLTAR → apagar (se dono) ou reagir (se outro)
+      case 'soltar': {
+        if (manifest.id) {
+          if (manifest.user_id === currentUser?.id) {
+            setNodeToDelete(manifest.id);
+          } else {
+            handleToggleSentiment(manifest.id, 'soltar');
+          }
+        }
+        break;
+      }
+      // 🔗 INTEGRAR → Pedir para entrar no mundo
+      case 'integrar': {
+        if (manifest.user_id) handleIntegrateWorld(manifest.user_id);
+        handleToggleSentiment(manifest.id, 'integrar');
+        break;
+      }
+      // 🎨 CRIAR → repostar (remix)
+      case 'criar': {
+        const originalContent = manifest.content || '';
+        const originalAuthor = manifest.profiles?.username || `presenca_${manifest.id.slice(0,4)}`;
+        setChatMessage(`🔮 @${originalAuthor}: "${originalContent.slice(0, 80)}${originalContent.length > 80 ? '...' : ''}"\n\n`);
+        setChatAction(ACTIONS.find(a => a.id === 'criar')!);
+        break;
+      }
+      // 🌌 TRANSCENDER → Ritual de Geometria Sagrada
+      case 'transcender': {
+        setTranscendActive(prev => !prev);
         break;
       }
     }
