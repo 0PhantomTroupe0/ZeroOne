@@ -14,24 +14,11 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [hexFlicker, setHexFlicker] = useState(false);
-  const [transitionFlicker, setTransitionFlicker] = useState(false);
-  const [binaryLeft, setBinaryLeft] = useState('01001001 01001110 01001001 01010100');
-  const [binaryRight, setBinaryRight] = useState('01011010 01000101 01010010 01001111');
-  const triggerPulse = (id: number) => {
-    setActivePulse(id);
-    setHoveredShard(id);
-    setTimeout(() => {
-      setActivePulse(null);
-    }, 3000);
-  };
+  const [binaryLeft] = useState('01001001 01001110 01001001 01010100');
+  const [binaryRight] = useState('01011010 01000101 01010010 01001111');
   const [crystalAvatars, setCrystalAvatars] = useState<string[]>([]);
   const [colorIndex, setColorIndex] = useState(3);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isMouseDown, setIsMouseDown] = useState(false);
   const [showToggleMenu, setShowToggleMenu] = useState(false);
-  const [hoveredShard, setHoveredShard] = useState<number | null>(null);
-  const [activePulse, setActivePulse] = useState<number | null>(null);
   const router = useRouter();
 
   const radarColors = [
@@ -61,52 +48,6 @@ export default function AuthPage() {
       setCrystalAvatars(registeredCharacters);
     };
     fetchAvatars();
-
-    // Hex flicker logic
-    const hexInterval = setInterval(() => {
-      setHexFlicker(true);
-      setTimeout(() => setHexFlicker(false), 200);
-    }, 4500);
-
-    // Random Binary Generator
-    const generateBinary = (length: number) => {
-      let res = '';
-      for (let i = 0; i < length; i++) {
-        res += Math.random() > 0.5 ? '1' : '0';
-        if ((i + 1) % 8 === 0 && i !== length - 1) res += ' ';
-      }
-      return res;
-    };
-
-    const binInterval = setInterval(() => {
-      // Small chance to glitch and freeze briefly, otherwise change rapidly
-      if (Math.random() > 0.1) {
-        setBinaryLeft(generateBinary(32));
-        setBinaryRight(generateBinary(32));
-      }
-    }, 80); // very fast cyber effect
-
-    const handleMouseMove = (e: MouseEvent) => {
-      // Calculate normalized position (-1 to 1)
-      const x = (e.clientX / window.innerWidth) * 2 - 1;
-      const y = (e.clientY / window.innerHeight) * 2 - 1;
-      setMousePosition({ x, y });
-    };
-
-    const handleMouseDown = () => setIsMouseDown(true);
-    const handleMouseUp = () => setIsMouseDown(false);
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      clearInterval(hexInterval);
-      clearInterval(binInterval);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
   }, []);
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -169,159 +110,29 @@ export default function AuthPage() {
   };
 
   return (
-    <main 
-      className={styles.container}
-      onPointerDown={() => setIsMouseDown(true)}
-      onPointerUp={() => setIsMouseDown(false)}
-      onPointerLeave={() => setIsMouseDown(false)}
-    >
-      <div className={styles.backgroundNoise} />
-      <div className={styles.overlayScanner} />
-
+    <main className={styles.container}>
       {/* FULL SCREEN GIANT CRYSTAL BACKGROUND */}
       <div className={styles.crystalBackground}>
-        <motion.div 
-          className={styles.topLightGlow} 
-          animate={{
-            x: hoveredShard === 1 ? -30 : hoveredShard === 8 ? 30 : hoveredShard === 4 ? 0 : 0,
-            y: hoveredShard !== null ? 10 : 0,
-            scale: hoveredShard !== null ? 1.05 : 1
-          }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-        />
-        
-        {/* Core Black Circle + Light */}
-        <div className={styles.voidCoreWrapper}>
-          <div className={styles.voidCore} />
-        </div>
-        
-        {/* Splinters / broken glass details around the crack */}
-        {[
-          { id: 1, x: 45, y: 5 },
-          { id: 2, x: 53, y: 3 },
-          { id: 3, x: 51, y: 8 },
-          { id: 4, x: 47, y: 2 },
-          { id: 5, x: 48, y: 7 },
-          { id: 6, x: 49, y: 4 },
-          { id: 7, x: 51.5, y: 1 },
-          { id: 8, x: 46, y: 6 },
-        ].map((item) => {
-          // Calculate individual attraction based on distance (Magnetic effect)
-          // mousePosition is -1 to 1. Convert to 0-100 range to match splinter x,y
-          const mx = (mousePosition.x + 1) * 50;
-          const my = (mousePosition.y + 1) * 50;
-          const dx = mx - item.x;
-          const dy = my - item.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          
-          // Magnetic force: stronger when closer
-          // We limit the reach so it feels localized
-          const power = Math.max(0, 1.5 - dist / 25); 
-          const moveX = dx * power * 1.2;
-          const moveY = dy * power * 1.2;
-
-          // Gravity effect: if mouse is down, fragments fall to the "floor" and scatter horizontally
-          const scatterX = item.id % 2 === 0 ? (200 + item.id * 30) : (-200 - item.id * 30);
-          const targetY = isMouseDown ? 1200 : moveY; 
-          const targetX = isMouseDown ? scatterX : moveX;
-
-          return (
-            <motion.div 
-              key={`splinter-wrapper-${item.id}`}
-              style={{
-                position: 'absolute',
-                top: 0, left: 0, width: '100%', height: '100%',
-                pointerEvents: 'none',
-                zIndex: 3,
-              }}
-              animate={{
-                x: targetX,
-                y: targetY,
-                scale: isMouseDown ? 0.6 : (1 + power * 0.2),
-                rotate: isMouseDown ? (item.id * 45) : 0,
-                opacity: isMouseDown ? 0.8 : 1
-              }}
-              transition={isMouseDown ? {
-                y: { duration: 1.5, ease: "easeIn" }, // Straight fall
-                x: { duration: 0.4 }, // Reset to straight line
-                rotate: { duration: 1.5, ease: 'linear' },
-                scale: { duration: 0.4 }
-              } : {
-                type: 'spring',
-                stiffness: 45,
-                damping: 20,
-                mass: 0.5 
-              }}
-            >
-              <div 
-                className={`${styles.splinter} ${styles[`sp${item.id}` as keyof typeof styles]}`}
-              />
-            </motion.div>
-          );
-        })}
-
         {[...Array(8)].map((_, i) => (
-          <motion.div 
+          <div 
             key={`shard-${i+1}`}
             className={`${styles.crystalShard} ${styles[`shard${i+1}` as keyof typeof styles]}`}
-            onMouseEnter={() => triggerPulse(i + 1)}
-            onMouseLeave={() => setHoveredShard(null)}
-            animate={{
-              scale: hoveredShard === (i + 1) ? 0.96 : 1,
-              filter: hoveredShard === (i + 1) ? 'brightness(0.7) blur(2px)' : 'brightness(1) blur(0px)',
-              z: hoveredShard === (i + 1) ? -50 : 0
-            }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            style={{ pointerEvents: 'auto' }}
           >
-            {/* 3-Second Illumination Glow Overlay */}
-            <motion.div 
-              className={styles.shardPulseOverlay}
-              initial={{ opacity: 0 }}
-              animate={{ 
-                opacity: activePulse === (i + 1) ? [0, 1, 0.4, 0] : 0 
-              }}
-              transition={{ 
-                duration: 3,
-                times: [0, 0.1, 0.3, 1],
-                ease: "easeOut"
-              }}
-            />
-
             {crystalAvatars[i] && (
-              <motion.div 
-                className={styles.reflectionWrapper}
-                animate={{
-                  filter: hoveredShard === (i + 1) 
-                    ? 'grayscale(100%) brightness(1.2) contrast(1.1)' 
-                    : 'none'
-                }}
-                transition={{ duration: 0.4 }}
-              >
+              <div className={styles.reflectionWrapper}>
                 <img 
                   src={crystalAvatars[i]} 
                   className={styles.shardReflection} 
                   alt="" 
                 />
-              </motion.div>
+              </div>
             )}
-          </motion.div>
+          </div>
         ))}
       </div>
 
-      {/* Global Alien Analyzing Scanner - left to right */}
-      <div className={styles.globalScanner}>
-        <div className={styles.scannerLine}></div>
-        <div className={styles.scannerGrid}></div>
-      </div>
-
       {/* Left side announcement */}
-      <motion.div 
-        className={`${styles.sidePanel} ${styles.sidePanelLeft}`}
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.2, duration: 0.8 }}
-      >
+      <div className={`${styles.sidePanel} ${styles.sidePanelLeft}`}>
         <div className={styles.binaryCode} style={{ marginBottom: '1.5rem', opacity: 0.4 }}>
           {binaryLeft}
         </div>
@@ -337,26 +148,17 @@ export default function AuthPage() {
         <div className={styles.binaryCode}>
           {binaryLeft}
         </div>
-      </motion.div>
+      </div>
       
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className={`${styles.authCard} ${transitionFlicker ? styles.radarTransitionActive : ''}`}
-      >
+      <div className={styles.authCard}>
         {!isLogin && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={styles.statusHeader}
-          >
+          <div className={styles.statusHeader}>
             <div className={styles.statusLabel}>
               <span className={styles.statusLight} />
               <span>CADASTRANDO</span>
               <span className={styles.statusLight} />
             </div>
-          </motion.div>
+          </div>
         )}
         {/* 12-Piece Fractured Window Matrix */}
         <div className={styles.authFragmentFrame}>
@@ -365,50 +167,22 @@ export default function AuthPage() {
           ))}
         </div>
 
-        {/* --- NOVO: Atmosfera e Espiral --- */}
-        <div className={styles.radarAtmosphere}>
-          <div className={styles.windWisp} />
-          <div className={styles.windWisp} style={{ animationDelay: '-2s', opacity: 0.3 }} />
-        </div>
-        
-        <svg className={styles.radarVortex} viewBox="0 0 480 480">
-          <path 
-            d="M240,240 c 0,0 20,-20 40,0 c 20,20 0,60 -40,60 c -60,0 -80,-60 -40,-100 c 60,-60 140,-20 140,60 c 0,100 -120,140 -200,80 c -100,-80 -60,-220 60,-240 c 160,-20 220,140 120,240" 
-            fill="none" 
-            stroke="white" 
-            strokeWidth="1.5" 
-            strokeLinecap="round"
-            className={styles.vortexPath}
-          />
-        </svg>
-
         <button 
           className={styles.radarColorBtn}
           onClick={() => {
-            setTransitionFlicker(true);
-            setTimeout(() => setTransitionFlicker(false), 300);
             setColorIndex((colorIndex + 1) % radarColors.length);
           }}
           title="Sincronizar Frequência de Cor"
           type="button"
         >
-          <div className={styles.waterOrbitContainer}>
-            <div className={`${styles.waterWisp} ${styles.wisp1}`} />
-            <div className={`${styles.waterWisp} ${styles.wisp2}`} />
-            <div className={`${styles.waterWisp} ${styles.wisp3}`} />
-          </div>
           <div className={styles.radarBtnGlow} />
         </button>
 
         <div className={styles.authContentWrapper}>
           <div 
-            className={`${styles.hexBackground} ${hexFlicker ? styles.hexFlickerActive : ''}`}
+            className={styles.hexBackground}
             style={{ '--radar-accent': radarColors[colorIndex] } as any}
-          >
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className={`${styles.radarSignal} ${styles[`sig${i+1}`]}`} />
-            ))}
-          </div>
+          />
 
           {/* Circular Radar Text Overlay */}
           <svg className={styles.radarTextSvg} viewBox="0 0 480 480">
@@ -425,45 +199,31 @@ export default function AuthPage() {
             </text>
           </svg>
 
-
-
         <form onSubmit={handleAuth} className={styles.form}>
-          <AnimatePresence mode="wait">
-            {error && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                className={styles.errorOverlay}
+          {error && (
+            <div className={styles.errorOverlay}>
+              <span>{error}</span>
+              <button 
+                type="button" 
+                onClick={() => setError(null)}
+                className={styles.closeAlert}
               >
-                <span>{error}</span>
-                <button 
-                  type="button" 
-                  onClick={() => setError(null)}
-                  className={styles.closeAlert}
-                >
-                  <X size={14} />
-                </button>
-              </motion.div>
-            )}
-            {message && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                className={styles.successOverlay}
+                <X size={14} />
+              </button>
+            </div>
+          )}
+          {message && (
+            <div className={styles.successOverlay}>
+              <span>{message}</span>
+              <button 
+                type="button" 
+                onClick={() => setMessage(null)}
+                className={styles.closeAlert}
               >
-                <span>{message}</span>
-                <button 
-                  type="button" 
-                  onClick={() => setMessage(null)}
-                  className={styles.closeAlert}
-                >
-                  <X size={14} />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                <X size={14} />
+              </button>
+            </div>
+          )}
 
           <div className={styles.inputGroup}>
             <div className={styles.inputWrapper}>
@@ -502,13 +262,13 @@ export default function AuthPage() {
           <button 
             type="submit" 
             disabled={loading} 
-            className={`${styles.logoBtn} ${loading ? styles.logoLoading : ''}`}
+            className={styles.logoBtn}
             title={isLogin ? 'Adentrar o Nexo' : 'Manifestar Existência'}
           >
             <div className={styles.logoArea}>
-              <div className={styles.logoBorder} style={loading ? { filter: 'saturate(5) hue-rotate(90deg) brightness(1.5)' } : {}}>
+              <div className={styles.logoBorder}>
                  <div className={styles.logoInner}>
-                   <img src="/logo.jpg" alt="ZeroDay Logo" className={styles.appLogo} style={loading ? { opacity: 0.5, filter: 'grayscale(100%)' } : {}} />
+                   <img src="/logo.jpg" alt="ZeroDay Logo" className={styles.appLogo} />
                  </div>
               </div>
             </div>
@@ -525,42 +285,30 @@ export default function AuthPage() {
           <MoreHorizontal size={24} />
         </button>
         
-        <AnimatePresence>
-          {showToggleMenu && (
-            <motion.button 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              type="button"
-              onClick={() => {
-                setTransitionFlicker(true);
-                setTimeout(() => setTransitionFlicker(false), 600);
-                setIsLogin(!isLogin);
-                setError(null);
-                setMessage(null);
-                setShowToggleMenu(false);
-              }}
-              className={styles.toggleBtn}
-              style={{ 
-                fontSize: '0.9rem', 
-                letterSpacing: '4px',
-                '--radar-accent': radarColors[colorIndex]
-              } as any}
-            >
-              {isLogin ? 'MATERIALIZAR' : 'DISSOLVER'}
-            </motion.button>
-          )}
-        </AnimatePresence>
+        {showToggleMenu && (
+          <button 
+            type="button"
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError(null);
+              setMessage(null);
+              setShowToggleMenu(false);
+            }}
+            className={styles.toggleBtn}
+            style={{ 
+              fontSize: '0.9rem', 
+              letterSpacing: '4px',
+              '--radar-accent': radarColors[colorIndex]
+            } as any}
+          >
+            {isLogin ? 'MATERIALIZAR' : 'DISSOLVER'}
+          </button>
+        )}
       </div>
-      </motion.div>
+      </div>
 
       {/* Right side announcement */}
-      <motion.div 
-        className={`${styles.sidePanel} ${styles.sidePanelRight}`}
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.4, duration: 0.8 }}
-      >
+      <div className={`${styles.sidePanel} ${styles.sidePanelRight}`}>
         <div className={styles.binaryCode} style={{ marginBottom: '1.5rem', opacity: 0.4 }}>
           {binaryRight}
         </div>
@@ -576,7 +324,7 @@ export default function AuthPage() {
         <div className={styles.binaryCode}>
           {binaryRight}
         </div>
-      </motion.div>
+      </div>
 
       <div className={styles.glitchQuote}>
         "E se todas as suas verdades fossem apagadas, o que você escolheria acreditar?"
